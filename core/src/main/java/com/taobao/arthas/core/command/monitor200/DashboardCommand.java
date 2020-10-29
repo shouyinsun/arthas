@@ -40,6 +40,7 @@ import java.util.TimerTask;
 /**
  * @author hengyunabc 2015年11月19日 上午11:57:21
  */
+//dashboard 命令
 @Name("dashboard")
 @Summary("Overview of target jvm's thread, memory, gc, vm, tomcat info.")
 @Description(Constants.EXAMPLE +
@@ -58,6 +59,7 @@ public class DashboardCommand extends AnnotatedCommand {
 
     private int numOfExecutions = Integer.MAX_VALUE;
 
+    //5s执行一次
     private long interval = 5000;
 
     private volatile long count = 0;
@@ -195,6 +197,7 @@ public class DashboardCommand extends AnnotatedCommand {
     }
 
     private static void addGcInfo(TableElement table) {
+        //GarbageCollectorMXBean
         List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
         for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMxBeans) {
             String name = garbageCollectorMXBean.getName();
@@ -218,6 +221,7 @@ public class DashboardCommand extends AnnotatedCommand {
         return String.format("%d%s", size / unit, unitStr);
     }
 
+    //tomcat 信息
     private void addTomcatInfo(TableElement table) {
 
         String threadPoolPath = "http://localhost:8006/connector/threadpool";
@@ -261,11 +265,13 @@ public class DashboardCommand extends AnnotatedCommand {
         }
     }
 
+    //线程信息
     static String drawThreadInfo(int width, int height) {
         Map<String, Thread> threads = ThreadUtil.getThreads();
         return RenderUtil.render(threads.values().iterator(), new ThreadRenderer(), width, height);
     }
 
+    //内存和gc信息
     static String drawMemoryInfoAndGcInfo(int width, int height) {
         TableElement table = new TableElement(1, 1);
 

@@ -24,8 +24,10 @@ public class DefaultInterceptorClassParser implements InterceptorClassParser {
             public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
                 for (Annotation onMethodAnnotation : method.getAnnotations()) {
                     for (Annotation onAnnotation : onMethodAnnotation.annotationType().getAnnotations()) {
+                        //@AtEnter @AtExit等注解都是InterceptorParserHander注解类的子类
                         if (InterceptorParserHander.class.isAssignableFrom(onAnnotation.annotationType())) {
 
+                            //静态方法
                             if (!Modifier.isStatic(method.getModifiers())) {
                                 throw new IllegalArgumentException("method must be static. method: " + method);
                             }

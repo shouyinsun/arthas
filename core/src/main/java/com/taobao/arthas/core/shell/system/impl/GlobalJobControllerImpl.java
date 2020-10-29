@@ -47,6 +47,7 @@ public class GlobalJobControllerImpl extends JobControllerImpl {
     public boolean removeJob(int id) {
         JobTimeoutTask jobTimeoutTask = jobTimeoutTaskMap.remove(id);
         if (jobTimeoutTask != null) {
+            //job 取消
             jobTimeoutTask.cancel();
         }
         return super.removeJob(id);
@@ -56,12 +57,11 @@ public class GlobalJobControllerImpl extends JobControllerImpl {
     public Job createJob(InternalCommandManager commandManager, List<CliToken> tokens, Session session, JobListener jobHandler, Term term, ResultDistributor resultDistributor) {
         final Job job = super.createJob(commandManager, tokens, session, jobHandler, term, resultDistributor);
 
-        /*
-         * 达到超时时间将会停止job
-         */
+        //超时执行,停止job
         JobTimeoutTask jobTimeoutTask = new JobTimeoutTask(job);
         long jobTimeoutInSecond = getJobTimeoutInSecond();
         Date timeoutDate = new Date(System.currentTimeMillis() + (jobTimeoutInSecond * 1000));
+        //延迟jobTimeoutInSecond执行,停止job
         ArthasBootstrap.getInstance().getScheduledExecutorService().schedule(jobTimeoutTask, jobTimeoutInSecond, TimeUnit.SECONDS);
         jobTimeoutTaskMap.put(job.id(), jobTimeoutTask);
         job.setTimeoutDate(timeoutDate);
@@ -103,7 +103,7 @@ public class GlobalJobControllerImpl extends JobControllerImpl {
         return result;
     }
 
-    private static class JobTimeoutTask implements Runnable {
+    private static class JobTimeoutTask implements Runnable {//到时执行,停止job
         private Job job;
 
         public JobTimeoutTask(Job job) {
@@ -127,7 +127,7 @@ public class GlobalJobControllerImpl extends JobControllerImpl {
             }
         }
 
-        public void cancel() {
+        public void cancel() {//取消,置null，run不执行
             job = null;
         }
     }

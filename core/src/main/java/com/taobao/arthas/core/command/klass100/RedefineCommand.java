@@ -36,6 +36,10 @@ import com.taobao.middleware.cli.annotations.Summary;
                 "  redefine /tmp/Test.class\n" +
                 "  redefine -c 327a647b /tmp/Test.class /tmp/Test\\$Inner.class \n" +
                 Constants.WIKI + Constants.WIKI_HOME + "redefine")
+//redefine 命令
+// 加载新的字节码 可以配合jad、mc来使用
+// redefine的class不能修改、添加、删除类的field和method，包括方法参数、方法名称及返回值
+// 正在跑的函数,没有退出不能生效
 public class RedefineCommand extends AnnotatedCommand {
     private static final Logger logger = LoggerFactory.getLogger(RedefineCommand.class);
     private static final int MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -110,7 +114,7 @@ public class RedefineCommand extends AnnotatedCommand {
             return;
         }
 
-        List<ClassDefinition> definitions = new ArrayList<ClassDefinition>();
+        List<ClassDefinition> definitions = new ArrayList();
         for (Class<?> clazz : inst.getAllLoadedClasses()) {
             if (bytesMap.containsKey(clazz.getName())) {
                 ClassLoader classLoader = clazz.getClassLoader();
@@ -129,6 +133,7 @@ public class RedefineCommand extends AnnotatedCommand {
                 process.end();
                 return;
             }
+            //使用Instrumentation的redefineClasses
             inst.redefineClasses(definitions.toArray(new ClassDefinition[0]));
             process.write("redefine success, size: " + definitions.size() + "\n");
         } catch (Exception e) {

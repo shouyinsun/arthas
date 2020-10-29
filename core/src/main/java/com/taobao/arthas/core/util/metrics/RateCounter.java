@@ -57,7 +57,7 @@ public class RateCounter {
 
     public double rate() {
         long c = count.get();
-        int countLength = 0;
+        int countLength ;
         long sum = 0;
         if (c > values.length()) {
             countLength = values.length();

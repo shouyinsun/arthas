@@ -27,6 +27,8 @@ import com.taobao.middleware.cli.annotations.Summary;
         "  stack *StringUtils isBlank '#cost>100'\n" +
         "  stack -E org\\.apache\\.commons\\.lang\\.StringUtils isBlank\n" +
         Constants.WIKI + Constants.WIKI_HOME + "stack")
+//stack 命令
+// 负责输出当前方法执行上下文
 public class StackCommand extends EnhancerCommand {
     private String classPattern;
     private String methodPattern;

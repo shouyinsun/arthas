@@ -6,11 +6,13 @@ import com.taobao.arthas.bytekit.asm.location.LocationType;
 
 /**
  * 
- * 检查整个method里，是否有某个函数调用。用于检查 enter/exit/exception exit
+ * 检查整个method里,是否有某个函数调用。
+ * 用于检查 enter/exit/exception exit
  * 
  * @author hengyunabc 2020-05-04
  *
  */
+//contain 包含过滤
 public class InvokeContainLocationFilter implements LocationFilter {
 
     private String owner;
@@ -44,6 +46,7 @@ public class InvokeContainLocationFilter implements LocationFilter {
 
         AbstractInsnNode current = insnNode;
         while (current != null) {
+            //下一个
             current = current.getNext();
             if (current instanceof MethodInsnNode) {
                 MethodInsnNode methodInsnNode = (MethodInsnNode) current;
@@ -54,6 +57,7 @@ public class InvokeContainLocationFilter implements LocationFilter {
         }
         current = insnNode;
         while (current != null) {
+            //前一个
             current = current.getPrevious();
             if (current instanceof MethodInsnNode) {
                 MethodInsnNode methodInsnNode = (MethodInsnNode) current;

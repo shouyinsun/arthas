@@ -4,13 +4,16 @@ package com.taobao.arthas.core.util.matcher;
  * wildcard matcher
  * @author ralf0131 2017-01-06 13:17.
  */
+//通配符匹配
 public class WildcardMatcher implements Matcher<String> {
+    //* 匹配任意长度(含0)的任意字符
+    //? 匹配任意单个字符
 
     private final String pattern;
 
     private static final Character ASTERISK = '*';
     private static final Character QUESTION_MARK = '?';
-    private static final Character ESCAPE = '\\';
+    private static final Character ESCAPE = '\\';//转义符
 
 
 
@@ -47,7 +50,7 @@ public class WildcardMatcher implements Matcher<String> {
         while (true) {
 
             // check if end of string and/or pattern occurred
-            if ((sNdx >= sLen)) {
+            if ((sNdx >= sLen)) {//target已到最后,pattern剩余只能都是*
                 // end of string still may have pending '*' callback pattern
                 while ((pNdx < pLen) && (pattern.charAt(pNdx) == ASTERISK)) {
                     pNdx++;
@@ -64,17 +67,17 @@ public class WildcardMatcher implements Matcher<String> {
             // perform logic
             if (!nextIsNotWildcard) {
 
-                if (p == ESCAPE) {
-                    pNdx++;
+                if (p == ESCAPE) {//转义
+                    pNdx++;//next
                     nextIsNotWildcard = true;
                     continue;
                 }
-                if (p == QUESTION_MARK) {
+                if (p == QUESTION_MARK) {//任意的一个char,匹配,都++
                     sNdx++;
                     pNdx++;
                     continue;
                 }
-                if (p == ASTERISK) {
+                if (p == ASTERISK) {//*
                     // next pattern char
                     char pnext = 0;
                     if (pNdx + 1 < pLen) {
@@ -90,7 +93,7 @@ public class WildcardMatcher implements Matcher<String> {
 
                     // find recursively if there is any substring from the end of the
                     // line that matches the rest of the pattern !!!
-                    for (i = target.length(); i >= sNdx; i--) {
+                    for (i = target.length(); i >= sNdx; i--) {//从后向前,递归判断*之后的内容与target(i,target.length)之间是否match,i--
                         if (match(target, pattern, i, pNdx)) {
                             return true;
                         }

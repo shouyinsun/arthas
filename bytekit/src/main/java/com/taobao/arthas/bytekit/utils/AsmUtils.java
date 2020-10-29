@@ -37,6 +37,7 @@ import com.taobao.arthas.bytekit.asm.ClassLoaderAwareClassWriter;
  * @author hengyunabc
  *
  */
+//asm工具类
 public class AsmUtils {
 
 	public static ClassNode loadClass(Class<?> clazz) throws IOException {

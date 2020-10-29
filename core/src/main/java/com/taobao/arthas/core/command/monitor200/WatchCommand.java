@@ -28,6 +28,9 @@ import com.taobao.middleware.cli.annotations.Summary;
         "  watch *StringUtils isBlank params '#cost>100'\n" +
         "  watch -E -b org\\.apache\\.commons\\.lang\\.StringUtils isBlank params[0]\n" +
         Constants.WIKI + Constants.WIKI_HOME + "watch")
+//watch 命令
+// 观察到指定方法的调用情况
+// 能观察到的范围为：返回值、抛出异常、入参，通过编写OGNL表达式进行对应变量的查看
 public class WatchCommand extends EnhancerCommand {
 
     private String classPattern;

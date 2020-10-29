@@ -47,7 +47,7 @@ public class ResetCommand extends AnnotatedCommand {
     public void process(CommandProcess process) {
         Instrumentation inst = process.session().getInstrumentation();
         Matcher matcher = SearchUtils.classNameMatcher(classPattern, isRegEx);
-        EnhancerAffect enhancerAffect = null;
+        EnhancerAffect enhancerAffect ;
         try {
             enhancerAffect = Enhancer.reset(inst, matcher);
             process.write(enhancerAffect.toString()).write("\n");

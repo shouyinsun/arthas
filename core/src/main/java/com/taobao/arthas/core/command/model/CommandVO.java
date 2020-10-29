@@ -15,8 +15,8 @@ public class CommandVO {
     private String description;
     private String usage;
     private String summary;
-    private List<CommandOptionVO> options = new ArrayList<CommandOptionVO>();
-    private List<ArgumentVO> arguments = new ArrayList<ArgumentVO>();
+    private List<CommandOptionVO> options = new ArrayList();
+    private List<ArgumentVO> arguments = new ArrayList();
 
     public CommandVO() {
     }

@@ -14,7 +14,9 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+//动态编译器
 public class DynamicCompiler {
+    //java 编译器
     private final JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
     private final StandardJavaFileManager standardFileManager;
     private final List<String> options = new ArrayList<String>();
@@ -101,7 +103,7 @@ public class DynamicCompiler {
 
         JavaFileManager fileManager = new DynamicJavaFileManager(standardFileManager, dynamicClassLoader);
 
-        DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector();
         JavaCompiler.CompilationTask task = javaCompiler.getTask(null, fileManager, collector, options, null,
                         compilationUnits);
 

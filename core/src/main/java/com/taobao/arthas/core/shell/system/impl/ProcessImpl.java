@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author beiwei30 on 10/11/2016.
  * @author gongdewei 2020-03-26
  */
+//process实现
 public class ProcessImpl implements Process {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessImpl.class);
@@ -345,7 +346,7 @@ public class ProcessImpl implements Process {
             }
         }
 
-        CommandLine cl = null;
+        CommandLine cl;
         try {
             if (commandContext.cli() != null) {
                 if (commandContext.cli().parse(args2, false).isAskingForHelp()) {
@@ -368,6 +369,7 @@ public class ProcessImpl implements Process {
             process.echoTips("cache location  : " + cacheLocation() + "\n");
         }
         Runnable task = new CommandProcessTask(process);
+        //执行命令
         ArthasBootstrap.getInstance().execute(task);
     }
 
@@ -554,6 +556,7 @@ public class ProcessImpl implements Process {
                     processAware.setProcess(this.process);
                 }
             }
+            //注册监听器,并create启动
             AdviceWeaver.reg(listener);
             
             this.transformer = transformer;

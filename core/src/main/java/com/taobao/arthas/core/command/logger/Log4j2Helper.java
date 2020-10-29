@@ -26,6 +26,7 @@ import com.taobao.arthas.core.util.StringUtils;
  * @author hengyunabc 2019-09-20
  *
  */
+//log4j2
 public class Log4j2Helper {
     private static boolean Log4j2 = false;
     private static Field configField = null;
@@ -82,8 +83,9 @@ public class Log4j2Helper {
         return null;
     }
 
+    //getLogger
     public static Map<String, Map<String, Object>> getLoggers(String name, boolean includeNoAppender) {
-        Map<String, Map<String, Object>> loggerInfoMap = new HashMap<String, Map<String, Object>>();
+        Map<String, Map<String, Object>> loggerInfoMap = new HashMap();
         if (!Log4j2) {
             return loggerInfoMap;
         }

@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
  * <p/>
  * Created by zhuyong on 15/11/12.
  */
+//使用上报统计
 public class UserStatUtil {
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private static final String ip = IPUtils.getLocalIP();
@@ -97,13 +98,13 @@ public class UserStatUtil {
                 if (queryData.length() != 0) {
                     link = link + "?" + queryData;
                 }
-                URL url = new URL(link.toString());
+                URL url = new URL(link);
                 URLConnection connection = url.openConnection();
                 connection.setConnectTimeout(1000);
                 connection.setReadTimeout(1000);
                 connection.connect();
                 br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String line = null;
+                String line ;
                 StringBuilder result = new StringBuilder();
                 while ((line = br.readLine()) != null) {
                     result.append(line);

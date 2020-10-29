@@ -51,8 +51,11 @@
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
                             <archive>
+                                <!-- manifest preMain class -->
                                 <manifestEntries>
+                                    <!--premain在应用加载前执行，通常用于加载重新编辑类-->
                                     <Premain-Class>com.taobao.arthas.agent332.AgentBootstrap</Premain-Class>
+                                    <!--agent main  运行时修改-->
                                     <Agent-Class>com.taobao.arthas.agent332.AgentBootstrap</Agent-Class>
                                     <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                     <Can-Retransform-Classes>true</Can-Retransform-Classes>

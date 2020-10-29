@@ -6,11 +6,13 @@ import com.taobao.arthas.bytekit.asm.location.LocationType;
 
 /**
  * 
- * 检查某个 AbstractInsnNode 的前面是否有某个函数调用，如果有，则认为这个location是已被处理过的
+ * 检查某个 AbstractInsnNode 的前面是否有某个函数调用
+ * 如果有，则认为这个location是已被处理过的
  * 
  * @author hengyunabc 2020-05-04
  *
  */
+//
 public class InvokeCheckLocationFilter implements LocationFilter {
 
     private String owner;

@@ -24,6 +24,8 @@ import com.taobao.middleware.cli.annotations.Summary;
  * @author hengyunabc 2018-10-18
  *
  */
+//ognl表达式 命令
+// Object Graph Navigation Language 对象图导航语言
 @Name("ognl")
 @Summary("Execute ognl expression.")
 @Description(Constants.EXAMPLE
@@ -65,8 +67,8 @@ public class OgnlCommand extends AnnotatedCommand {
         int exitCode = 0;
         try {
             Instrumentation inst = process.session().getInstrumentation();
-            ClassLoader classLoader = null;
-            if (hashCode == null) {
+            ClassLoader classLoader ;
+            if (hashCode == null) {//缺省 systemClassLoader
                 classLoader = ClassLoader.getSystemClassLoader();
             } else {
                 classLoader = ClassLoaderUtils.getClassLoader(inst, hashCode);
@@ -80,6 +82,7 @@ public class OgnlCommand extends AnnotatedCommand {
 
             Express unpooledExpress = ExpressFactory.unpooledExpress(classLoader);
             try {
+                //执行表达式
                 Object value = unpooledExpress.get(express);
                 String result = StringUtils.objectToString(expand >= 0 ? new ObjectView(value, expand).draw() : value);
                 process.write(result + "\n");

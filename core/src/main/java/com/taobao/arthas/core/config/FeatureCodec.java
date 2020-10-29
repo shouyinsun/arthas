@@ -93,7 +93,7 @@ public class FeatureCodec {
      */
     public Map<String, String> toMap(final String featureString) {
 
-        final Map<String, String> map = new HashMap<String, String>();
+        final Map<String, String> map = new HashMap();
 
         if (isBlank(featureString)) {
             return map;
@@ -190,8 +190,8 @@ public class FeatureCodec {
      */
     private String[] escapeSplit(String string, char splitEscapeChar) {
 
-        final ArrayList<String> segmentArrayList = new ArrayList<String>();
-        final Stack<Character> decodeStack = new Stack<Character>();
+        final ArrayList<String> segmentArrayList = new ArrayList();
+        final Stack<Character> decodeStack = new Stack();
         final int stringLength = string.length();
 
         for (int index = 0; index < stringLength; index++) {

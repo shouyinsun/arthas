@@ -62,6 +62,8 @@ import com.taobao.arthas.core.util.matcher.Matcher;
  * 对类进行通知增强 Created by vlinux on 15/5/17.
  * @author hengyunabc
  */
+//增强
+// ClassFileTransformer 类文件转换
 public class Enhancer implements ClassFileTransformer {
 
     private static final Logger logger = LoggerFactory.getLogger(Enhancer.class);
@@ -74,8 +76,9 @@ public class Enhancer implements ClassFileTransformer {
     private final EnhancerAffect affect;
     private Set<Class<?>> matchingClasses = null;
 
-    // 被增强的类的缓存
-    private final static Map<Class<?>/* Class */, Object> classBytesCache = new WeakHashMap<Class<?>, Object>();
+    // 被增强的类,用作reset
+    private final static Map<Class<?>/* Class */, Object> classBytesCache = new WeakHashMap();
+    //spy 实现
     private static SpyImpl spyImpl = new SpyImpl();
 
     static {
@@ -83,12 +86,9 @@ public class Enhancer implements ClassFileTransformer {
     }
 
     /**
-     * @param adviceId          通知编号
      * @param isTracing         可跟踪方法调用
      * @param skipJDKTrace      是否忽略对JDK内部方法的跟踪
-     * @param matchingClasses   匹配中的类
      * @param methodNameMatcher 方法名匹配
-     * @param affect            影响统计
      */
     public Enhancer(AdviceListener listener, boolean isTracing, boolean skipJDKTrace, Matcher classNameMatcher,
             Matcher methodNameMatcher) {
@@ -101,11 +101,12 @@ public class Enhancer implements ClassFileTransformer {
         affect.setListenerId(listener.id());
     }
 
+    //transform 转换
     @Override
     public byte[] transform(final ClassLoader inClassLoader, String className, Class<?> classBeingRedefined,
             ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
         try {
-            // 检查classloader能否加载到 SpyAPI，如果不能，则放弃增强
+            // 检查classloader能否加载到SpyAPI，如果不能，则放弃增强
             try {
                 if (inClassLoader != null) {
                     inClassLoader.loadClass(SpyAPI.class.getName());
@@ -116,7 +117,7 @@ public class Enhancer implements ClassFileTransformer {
                 return null;
             }
 
-            // 这里要再次过滤一次，为啥？因为在transform的过程中，有可能还会再诞生新的类
+            // 这里要再次过滤一次,因为在transform的过程中，有可能还会再诞生新的类
             // 所以需要将之前需要转换的类集合传递下来，再次进行判断
             if (matchingClasses != null && !matchingClasses.contains(classBeingRedefined)) {
                 return null;
@@ -127,12 +128,14 @@ public class Enhancer implements ClassFileTransformer {
             // 生成增强字节码
             DefaultInterceptorClassParser defaultInterceptorClassParser = new DefaultInterceptorClassParser();
 
-            final List<InterceptorProcessor> interceptorProcessors = new ArrayList<InterceptorProcessor>();
+            //拦截处理器
+            final List<InterceptorProcessor> interceptorProcessors = new ArrayList();
 
             interceptorProcessors.addAll(defaultInterceptorClassParser.parse(SpyInterceptor1.class));
             interceptorProcessors.addAll(defaultInterceptorClassParser.parse(SpyInterceptor2.class));
             interceptorProcessors.addAll(defaultInterceptorClassParser.parse(SpyInterceptor3.class));
 
+            //trace 命令
             if (this.isTracing) {
                 if (this.skipJDKTrace == false) {
                     interceptorProcessors.addAll(defaultInterceptorClassParser.parse(SpyTraceInterceptor1.class));
@@ -145,14 +148,14 @@ public class Enhancer implements ClassFileTransformer {
                 }
             }
 
-            List<MethodNode> matchedMethods = new ArrayList<MethodNode>();
+            List<MethodNode> matchedMethods = new ArrayList();
             for (MethodNode methodNode : classNode.methods) {
-                if (!isIgnore(methodNode, methodNameMatcher)) {
+                if (!isIgnore(methodNode, methodNameMatcher)) {//method匹配
                     matchedMethods.add(methodNode);
                 }
             }
 
-            // 用于检查是否已插入了 spy函数，如果已有则不重复处理
+            // 用于检查是否已插入了 spy函数,如果已有则不重复处理
             GroupLocationFilter groupLocationFilter = new GroupLocationFilter();
 
             LocationFilter enterFilter = new InvokeContainLocationFilter(Type.getInternalName(SpyAPI.class), "atEnter",
@@ -177,7 +180,8 @@ public class Enhancer implements ClassFileTransformer {
             groupLocationFilter.addFilter(invokeExceptionFilter);
 
             for (MethodNode methodNode : matchedMethods) {
-                // 先查找是否有 atBeforeInvoke 函数，如果有，则说明已经有trace了，则直接不再尝试增强，直接插入 listener
+                // 先查找是否有 atBeforeInvoke 函数
+                // 如果有，则说明已经有trace了，则直接不再尝试增强，直接插入listener
                 if(AsmUtils.containsMethodInsnNode(methodNode, Type.getInternalName(SpyAPI.class), "atBeforeInvoke")) {
                     for (AbstractInsnNode insnNode = methodNode.instructions.getFirst(); insnNode != null; insnNode = insnNode
                             .getNext()) {
@@ -230,7 +234,7 @@ public class Enhancer implements ClassFileTransformer {
 
             byte[] enhanceClassByteArray = AsmUtils.toBytes(classNode, inClassLoader);
 
-            // 增强成功，记录类
+            // 增强成功，记录原始类
             classBytesCache.put(classBeingRedefined, new Object());
 
             // dump the class
@@ -333,11 +337,6 @@ public class Enhancer implements ClassFileTransformer {
      * 对象增强
      *
      * @param inst              inst
-     * @param adviceId          通知ID
-     * @param isTracing         可跟踪方法调用
-     * @param skipJDKTrace      是否忽略对JDK内部方法的跟踪
-     * @param classNameMatcher  类名匹配
-     * @param methodNameMatcher 方法名匹配
      * @return 增强影响范围
      * @throws UnmodifiableClassException 增强失败
      */
@@ -352,9 +351,11 @@ public class Enhancer implements ClassFileTransformer {
 
         logger.info("enhance matched classes: {}", matchingClasses);
 
+        //转换器 this
         affect.setTransformer(this);
 
         try {
+            //add transform
             ArthasBootstrap.getInstance().getTransformerManager().addTransformer(this, isTracing);
 
             // 批量增强
@@ -363,6 +364,7 @@ public class Enhancer implements ClassFileTransformer {
                 final Class<?>[] classArray = new Class<?>[size];
                 arraycopy(matchingClasses.toArray(), 0, classArray, 0, size);
                 if (classArray.length > 0) {
+                    //reTransform 再转换
                     inst.retransformClasses(classArray);
                     logger.info("Success to batch transform classes: " + Arrays.toString(classArray));
                 }
@@ -370,6 +372,7 @@ public class Enhancer implements ClassFileTransformer {
                 // for each 增强
                 for (Class<?> clazz : matchingClasses) {
                     try {
+                        //reTransform
                         inst.retransformClasses(clazz);
                         logger.info("Success to transform class: " + clazz);
                     } catch (Throwable t) {
@@ -404,9 +407,10 @@ public class Enhancer implements ClassFileTransformer {
             throws UnmodifiableClassException {
 
         final EnhancerAffect affect = new EnhancerAffect();
-        final Set<Class<?>> enhanceClassSet = new HashSet<Class<?>>();
+        final Set<Class<?>> enhanceClassSet = new HashSet();
 
         for (Class<?> classInCache : classBytesCache.keySet()) {
+            //class 匹配
             if (classNameMatcher.matching(classInCache.getName())) {
                 enhanceClassSet.add(classInCache);
             }
@@ -416,6 +420,7 @@ public class Enhancer implements ClassFileTransformer {
             @Override
             public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                     ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+                //
                 return null;
             }
         };

@@ -11,6 +11,7 @@ import com.taobao.arthas.core.shell.term.impl.TelnetTermServer;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
+//终端server
 public abstract class TermServer {
 
     /**

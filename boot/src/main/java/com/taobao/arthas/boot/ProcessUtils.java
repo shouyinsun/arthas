@@ -52,7 +52,7 @@ public class ProcessUtils {
     public static final int STATUS_EXEC_ERROR = 101;
 
     @SuppressWarnings("resource")
-    public static long select(boolean v, long telnetPortPid, String select) throws InputMismatchException {
+    public static long select(boolean v, long telnetPortPid, String select) throws InputMismatchException {//选择pid
         Map<Long, String> processMap = listProcessByJps(v);
         // Put the port that is already listening at the first
         if (telnetPortPid > 0 && processMap.containsKey(telnetPortPid)) {
@@ -96,7 +96,7 @@ public class ProcessUtils {
             count++;
         }
 
-        // read choice
+        // read choice 选择pid
         String line = new Scanner(System.in).nextLine();
         if (line.trim().isEmpty()) {
             // get the first process id
@@ -120,7 +120,7 @@ public class ProcessUtils {
         return -1;
     }
 
-    private static Map<Long, String> listProcessByJps(boolean v) {
+    private static Map<Long, String> listProcessByJps(boolean v) {//java  进程
         Map<Long, String> result = new LinkedHashMap<Long, String>();
 
         String jps = "jps";
@@ -131,7 +131,7 @@ public class ProcessUtils {
 
         AnsiLog.debug("Try use jps to lis java process, jps: " + jps);
 
-        String[] command = null;
+        String[] command ;
         if (v) {
             command = new String[] { jps, "-v", "-l" };
         } else {
@@ -228,6 +228,7 @@ public class ProcessUtils {
         return FOUND_JAVA_HOME;
     }
 
+    //启动arthas-core
     public static void startArthasCore(long targetPid, List<String> attachArgs) {
         // find java/java.exe, then try to find tools.jar
         String javaHome = findJavaHome();
@@ -254,6 +255,7 @@ public class ProcessUtils {
             command.add("-Xbootclasspath/a:" + toolsJar.getAbsolutePath());
         }
 
+        //启动 arthas-core  com.taobao.arthas.core.Arthas
         command.addAll(attachArgs);
         // "${JAVA_HOME}"/bin/java \
         // ${opts} \

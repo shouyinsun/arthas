@@ -27,6 +27,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
+//终端实现
 public class TermImpl implements Term {
 
     private static final List<Function> readlineFunctions = Helper.loadServices(Function.class.getClassLoader(), Function.class);

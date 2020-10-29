@@ -12,6 +12,7 @@ import com.taobao.arthas.core.util.ThreadLocalWatch;
 /**
  * @author ralf0131 2017-01-06 16:02.
  */
+//trace 通知监听
 public class AbstractTraceAdviceListener extends AdviceListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTraceAdviceListener.class);
     protected final ThreadLocalWatch threadLocalWatch = new ThreadLocalWatch();

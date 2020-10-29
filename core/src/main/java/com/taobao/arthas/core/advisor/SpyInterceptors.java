@@ -14,6 +14,7 @@ import com.taobao.arthas.bytekit.asm.interceptor.annotation.AtInvokeException;
  * @author hengyunabc 2020-06-05
  *
  */
+//spy 拦截器
 public class SpyInterceptors {
 
     public static class SpyInterceptor1 {
@@ -21,6 +22,7 @@ public class SpyInterceptors {
         @AtEnter(inline = true)
         public static void atEnter(@Binding.This Object target, @Binding.Class Class<?> clazz,
                 @Binding.MethodInfo String methodInfo, @Binding.Args Object[] args) {
+            //执行 SpyImpl 的atEnter
             SpyAPI.atEnter(clazz, methodInfo, target, args);
         }
     }
@@ -29,6 +31,7 @@ public class SpyInterceptors {
         @AtExit(inline = true)
         public static void atExit(@Binding.This Object target, @Binding.Class Class<?> clazz,
                 @Binding.MethodInfo String methodInfo, @Binding.Args Object[] args, @Binding.Return Object returnObj) {
+            //执行 SpyImpl 的atExit
             SpyAPI.atExit(clazz, methodInfo, target, args, returnObj);
         }
     }
@@ -38,6 +41,7 @@ public class SpyInterceptors {
         public static void atExceptionExit(@Binding.This Object target, @Binding.Class Class<?> clazz,
                 @Binding.MethodInfo String methodInfo, @Binding.Args Object[] args,
                 @Binding.Throwable Throwable throwable) {
+            //执行 SpyImpl 的atExceptionExit
             SpyAPI.atExceptionExit(clazz, methodInfo, target, args, throwable);
         }
     }
@@ -53,6 +57,7 @@ public class SpyInterceptors {
                 , "java.lang.Double"})
         public static void onInvoke(@Binding.This Object target, @Binding.Class Class<?> clazz,
                 @Binding.InvokeInfo String invokeInfo) {
+            //执行 SpyImpl 的 atBeforeInvoke
             SpyAPI.atBeforeInvoke(clazz, invokeInfo, target);
         }
     }
@@ -68,6 +73,7 @@ public class SpyInterceptors {
                 , "java.lang.Double"})
         public static void onInvokeAfter(@Binding.This Object target, @Binding.Class Class<?> clazz,
                 @Binding.InvokeInfo String invokeInfo) {
+            //执行 SpyImpl 的 atAfterInvoke
             SpyAPI.atAfterInvoke(clazz, invokeInfo, target);
         }
     }
@@ -87,7 +93,7 @@ public class SpyInterceptors {
         }
     }
 
-    public static class SpyTraceExcludeJDKInterceptor1 {
+    public static class SpyTraceExcludeJDKInterceptor1 {//trace不包含jdk类
         @AtInvoke(name = "", inline = true, whenComplete = false, excludes = "java.**")
         public static void onInvoke(@Binding.This Object target, @Binding.Class Class<?> clazz,
                 @Binding.InvokeInfo String invokeInfo) {

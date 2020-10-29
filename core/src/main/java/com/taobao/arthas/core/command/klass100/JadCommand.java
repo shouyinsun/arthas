@@ -39,6 +39,7 @@ import static com.taobao.text.ui.Element.label;
  * @author diecui1202 on 15/11/24.
  * @author hengyunabc 2018-11-16
  */
+//decompile 反编译命令
 @Name("jad")
 @Summary("Decompile class")
 @Description(Constants.EXAMPLE +
@@ -129,16 +130,18 @@ public class JadCommand extends AnnotatedCommand {
 
     private void processExactMatch(CommandProcess process, RowAffect affect, Instrumentation inst, Set<Class<?>> matchedClasses, Set<Class<?>> withInnerClasses) {
         Class<?> c = matchedClasses.iterator().next();
-        Set<Class<?>> allClasses = new HashSet<Class<?>>(withInnerClasses);
+        Set<Class<?>> allClasses = new HashSet(withInnerClasses);
         allClasses.add(c);
 
         try {
+            //dump 的字节码文件
             ClassDumpTransformer transformer = new ClassDumpTransformer(allClasses);
             InstrumentationUtils.retransformClasses(inst, transformer, allClasses);
 
             Map<Class<?>, File> classFiles = transformer.getDumpResult();
             File classFile = classFiles.get(c);
 
+            //反编译
             String source = Decompiler.decompile(classFile.getAbsolutePath(), methodName, hideUnicode);
             if (source != null) {
                 source = pattern.matcher(source).replaceAll("");

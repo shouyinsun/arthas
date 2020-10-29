@@ -31,6 +31,7 @@ import java.util.Set;
 /**
  * @author hengyunabc 2015年12月7日 下午2:06:21
  */
+//thread 命令
 @Name("thread")
 @Summary("Display thread info, thread stack")
 @Description(Constants.EXAMPLE +
@@ -43,7 +44,8 @@ import java.util.Set;
         "  thread --state BLOCKED\n" +
         Constants.WIKI + Constants.WIKI_HOME + "thread")
 public class ThreadCommand extends AnnotatedCommand {
-    private static Set<String> states = null;
+    private static Set<String> states ;
+    //ThreadMXBean
     private static ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
     private long id = -1;
@@ -130,7 +132,7 @@ public class ThreadCommand extends AnnotatedCommand {
 
         // 统计各种线程状态
         StringBuilder threadStat = new StringBuilder();
-        Map<State, Integer> stateCountMap = new HashMap<State, Integer>();
+        Map<State, Integer> stateCountMap = new HashMap();
         for (State s : State.values()) {
             stateCountMap.put(s, 0);
         }
@@ -150,7 +152,7 @@ public class ThreadCommand extends AnnotatedCommand {
 
         String stat = RenderUtil.render(new LabelElement(threadStat), process.width());
 
-        Collection<Thread> resultThreads = new ArrayList<Thread>();
+        Collection<Thread> resultThreads = new ArrayList();
         if (!StringUtils.isEmpty(this.state)){
             this.state = this.state.toUpperCase();
             if(states.contains(this.state)) {

@@ -26,11 +26,13 @@ import static com.taobao.text.ui.Element.label;
  *
  * @author vlinux on 15/6/6.
  */
+//jvm 命令
 @Name("jvm")
 @Summary("Display the target JVM information")
 @Description(Constants.WIKI + Constants.WIKI_HOME + "jvm")
 public class JvmCommand extends AnnotatedCommand {
 
+    //RuntimeMXBean
     private final RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
     private final ClassLoadingMXBean classLoadingMXBean = ManagementFactory.getClassLoadingMXBean();
     private final CompilationMXBean compilationMXBean = ManagementFactory.getCompilationMXBean();

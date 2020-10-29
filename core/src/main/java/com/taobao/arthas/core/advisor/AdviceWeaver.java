@@ -14,6 +14,7 @@ import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
  * <p/>
  * Created by vlinux on 15/5/17.
  */
+//通知编织着
 public class AdviceWeaver {
 
     private static final Logger logger = LoggerFactory.getLogger(AdviceWeaver.class);

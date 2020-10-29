@@ -20,6 +20,7 @@ package java.arthas;
  * @author hengyunabc
  *
  */
+//SpyApi里是静态方法
 public class SpyAPI {
     private static final AbstractSpy NOPSPY = new NopSpy();
     private static volatile AbstractSpy spyInstance = new NopSpy();
@@ -62,20 +63,26 @@ public class SpyAPI {
         spyInstance.atInvokeException(clazz, invokeInfo, target, throwable);
     }
 
-    public static abstract class AbstractSpy {
+    public static abstract class AbstractSpy {//抽象spy
+        //进入
         public abstract void atEnter(Class<?> clazz, String methodInfo, Object target,
                 Object[] args);
 
+        //退出
         public abstract void atExit(Class<?> clazz, String methodInfo, Object target, Object[] args,
                 Object returnObject);
 
+        //异常退出
         public abstract void atExceptionExit(Class<?> clazz, String methodInfo, Object target,
                 Object[] args, Throwable throwable);
 
+        //调用前
         public abstract void atBeforeInvoke(Class<?> clazz, String invokeInfo, Object target);
 
+        //调用后
         public abstract void atAfterInvoke(Class<?> clazz, String invokeInfo, Object target);
 
+        //调用异常
         public abstract void atInvokeException(Class<?> clazz, String invokeInfo, Object target, Throwable throwable);
     }
 

@@ -52,6 +52,7 @@ import java.util.List;
  * TODO automatically discover the built-in commands.
  * @author beiwei30 on 17/11/2016.
  */
+//内嵌命令包
 public class BuiltinCommandPack implements CommandResolver {
 
     private static List<Command> commands = new ArrayList<Command>();
@@ -68,23 +69,37 @@ public class BuiltinCommandPack implements CommandResolver {
     private static void initCommands() {
         commands.add(Command.create(HelpCommand.class));
         commands.add(Command.create(KeymapCommand.class));
+        //sc search class
         commands.add(Command.create(SearchClassCommand.class));
+        //sm search method
         commands.add(Command.create(SearchMethodCommand.class));
+        //classLoader,可以查看类加载情况
         commands.add(Command.create(ClassLoaderCommand.class));
+        //jad 反编译
         commands.add(Command.create(JadCommand.class));
+        //获取静态属性
         commands.add(Command.create(GetStaticCommand.class));
+        //monitor 监控  调用次数,失败、成功，调用耗时
         commands.add(Command.create(MonitorCommand.class));
         commands.add(Command.create(StackCommand.class));
         commands.add(Command.create(ThreadCommand.class));
+        //trace命令
         commands.add(Command.create(TraceCommand.class));
+        //watch命令
         commands.add(Command.create(WatchCommand.class));
+        //Time Tunnel 命令 时间隧道
         commands.add(Command.create(TimeTunnelCommand.class));
+        //jvm
         commands.add(Command.create(JvmCommand.class));
         commands.add(Command.create(PerfCounterCommand.class));
         // commands.add(Command.create(GroovyScriptCommand.class));
+        //ognl 表达式
         commands.add(Command.create(OgnlCommand.class));
+        //内存编译,生成class文件
         commands.add(Command.create(MemoryCompilerCommand.class));
+        //redefine 重新加载class 命令
         commands.add(Command.create(RedefineCommand.class));
+        //dashboard 大盘
         commands.add(Command.create(DashboardCommand.class));
         commands.add(Command.create(DumpClassCommand.class));
         commands.add(Command.create(HeapDumpCommand.class));
@@ -95,9 +110,11 @@ public class BuiltinCommandPack implements CommandResolver {
         commands.add(Command.create(ResetCommand.class));
         commands.add(Command.create(VersionCommand.class));
         commands.add(Command.create(SessionCommand.class));
+        //系统属性,可以修改
         commands.add(Command.create(SystemPropertyCommand.class));
         commands.add(Command.create(SystemEnvCommand.class));
         commands.add(Command.create(VMOptionCommand.class));
+        //logger 日志,可以修改日志级别
         commands.add(Command.create(LoggerCommand.class));
         commands.add(Command.create(HistoryCommand.class));
         commands.add(Command.create(CatCommand.class));

@@ -18,6 +18,7 @@ import com.taobao.arthas.core.shell.system.Process;
  * @author hengyunabc 2019-05-14
  * @author gongdewei 2020-03-23
  */
+//job实现
 public class JobImpl implements Job {
 
     final int id;

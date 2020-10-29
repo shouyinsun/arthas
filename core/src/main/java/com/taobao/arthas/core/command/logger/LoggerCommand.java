@@ -39,6 +39,8 @@ import com.taobao.text.util.RenderUtil;
  * @author hengyunabc 2019-09-04
  *
  */
+//logger 命令
+// 打印logger信息和改变logger级别
 //@formatter:off
 @Name("logger")
 @Summary("Print logger info, and update the logger level")
@@ -57,17 +59,20 @@ public class LoggerCommand extends AnnotatedCommand {
     private static byte[] LogbackHelperBytes;
     private static byte[] Log4j2HelperBytes;
 
+    //class -> byte[]
     private static Map<Class<?>, byte[]> classToBytesMap = new HashMap<Class<?>, byte[]>();
 
     private static String arthasClassLoaderHash = ClassLoaderUtils
                     .classLoaderHash(LoggerCommand.class.getClassLoader());
 
     static {
+        //class文件 byte 数组
         LoggerHelperBytes = loadClassBytes(LoggerHelper.class);
         Log4jHelperBytes = loadClassBytes(Log4jHelper.class);
         LogbackHelperBytes = loadClassBytes(LogbackHelper.class);
         Log4j2HelperBytes = loadClassBytes(Log4j2Helper.class);
 
+        //class  文件byte 映射
         classToBytesMap.put(LoggerHelper.class, LoggerHelperBytes);
         classToBytesMap.put(Log4jHelper.class, Log4jHelperBytes);
         classToBytesMap.put(LogbackHelper.class, LogbackHelperBytes);
@@ -126,6 +131,7 @@ public class LoggerCommand extends AnnotatedCommand {
     public void level(CommandProcess process) {
         Instrumentation inst = process.session().getInstrumentation();
         boolean result = false;
+        //log4j 、log4j2 、logback 依次来一下
         try {
             Boolean updateResult = this.updateLevel(inst, Log4jHelper.class);
             if (Boolean.TRUE.equals(updateResult)) {
@@ -161,7 +167,7 @@ public class LoggerCommand extends AnnotatedCommand {
     }
 
     public void loggers(CommandProcess process, String name) {
-        Map<ClassLoader, LoggerTypes> classLoaderLoggerMap = new LinkedHashMap<ClassLoader, LoggerTypes>();
+        Map<ClassLoader, LoggerTypes> classLoaderLoggerMap = new LinkedHashMap();
 
         for (Class<?> clazz : process.session().getInstrumentation().getAllLoadedClasses()) {
             String className = clazz.getName();
@@ -287,6 +293,7 @@ public class LoggerCommand extends AnnotatedCommand {
         return sb.toString();
     }
 
+    //class名,加区分标识
     private static String helperClassNameWithClassLoader(ClassLoader classLoader, Class<?> helperClass) {
         String classLoaderHash = ClassLoaderUtils.classLoaderHash(classLoader);
         String className = helperClass.getName();
@@ -300,9 +307,11 @@ public class LoggerCommand extends AnnotatedCommand {
 
         String helperClassName = helperClassNameWithClassLoader(classLoader, helperClass);
         try {
+            //load helper name 的class
             classLoader.loadClass(helperClassName);
         } catch (ClassNotFoundException e) {
             try {
+                //load 异常,class重命名
                 byte[] helperClassBytes = AsmRenameUtil.renameClass(classToBytesMap.get(helperClass),
                                 helperClass.getName(), helperClassName);
                 ReflectUtils.defineClass(helperClassName, helperClassBytes, classLoader);
@@ -313,7 +322,9 @@ public class LoggerCommand extends AnnotatedCommand {
         }
 
         try {
+            //再load
             Class<?> clazz = classLoader.loadClass(helperClassName);
+            //反射getLoggers 方法
             Method getLoggersMethod = clazz.getMethod("getLoggers", new Class<?>[] { String.class, boolean.class });
             loggers = (Map<String, Map<String, Object>>) getLoggersMethod.invoke(null,
                             new Object[] { name, includeNoAppender });
@@ -323,15 +334,18 @@ public class LoggerCommand extends AnnotatedCommand {
         return loggers;
     }
 
+    //更新日志级别
     private Boolean updateLevel(Instrumentation inst, Class<?> helperClass) throws Exception {
-        ClassLoader classLoader = null;
-        if (hashCode == null) {
+        ClassLoader classLoader ;
+        if (hashCode == null) {//command没有指定classloader，使用系统classloader
             classLoader = ClassLoader.getSystemClassLoader();
         } else {
             classLoader = ClassLoaderUtils.getClassLoader(inst, hashCode);
         }
 
+        //
         Class<?> clazz = classLoader.loadClass(helperClassNameWithClassLoader(classLoader, helperClass));
+        //反射 update level
         Method updateLevelMethod = clazz.getMethod("updateLevel", new Class<?>[] { String.class, String.class });
         return (Boolean) updateLevelMethod.invoke(null, new Object[] { this.name, this.level });
 

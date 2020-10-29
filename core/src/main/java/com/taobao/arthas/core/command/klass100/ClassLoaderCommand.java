@@ -48,6 +48,7 @@ import java.util.TreeSet;
         "  classloader -a -c 327a647b\n" +
         "  classloader -c 659e0bfd --load demo.MathGame\n" +
         Constants.WIKI + Constants.WIKI_HOME + "classloader")
+//classloader 命令
 public class ClassLoaderCommand extends AnnotatedCommand {
     private boolean isTree = false;
     private String hashCode;
@@ -127,7 +128,7 @@ public class ClassLoaderCommand extends AnnotatedCommand {
     private void processClassLoaderStats(CommandProcess process, Instrumentation inst) {
         RowAffect affect = new RowAffect();
         List<ClassLoaderInfo> classLoaderInfos = getAllClassLoaderInfo(inst);
-        Map<String, ClassLoaderStat> classLoaderStats = new HashMap<String, ClassLoaderStat>();
+        Map<String, ClassLoaderStat> classLoaderStats = new HashMap();
         for (ClassLoaderInfo info: classLoaderInfos) {
             String name = info.classLoader == null ? "BootstrapClassLoader" : info.classLoader.getClass().getName();
             ClassLoaderStat stat = classLoaderStats.get(name);
@@ -249,6 +250,7 @@ public class ClassLoaderCommand extends AnnotatedCommand {
             hashCodeInt = Integer.valueOf(hashCode, 16);
         }
 
+        //bootstrap classloader
         SortedSet<Class> bootstrapClassSet = new TreeSet<Class>(new Comparator<Class>() {
             @Override
             public int compare(Class o1, Class o2) {
@@ -257,8 +259,10 @@ public class ClassLoaderCommand extends AnnotatedCommand {
         });
 
         Class[] allLoadedClasses = inst.getAllLoadedClasses();
-        Map<ClassLoader, SortedSet<Class>> classLoaderClassMap = new HashMap<ClassLoader, SortedSet<Class>>();
+        //classLoader -> loadedClass
+        Map<ClassLoader, SortedSet<Class>> classLoaderClassMap = new HashMap();
         for (Class clazz : allLoadedClasses) {
+            //clazz.getClassLoader 为null,是bootstrapClassloader
             ClassLoader classLoader = clazz.getClassLoader();
             // Class loaded by BootstrapClassLoader
             if (classLoader == null) {

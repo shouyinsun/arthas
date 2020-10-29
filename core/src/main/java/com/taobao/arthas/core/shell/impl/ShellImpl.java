@@ -54,6 +54,7 @@ public class ShellImpl implements Shell {
         session.put(Session.PID, pid);
         session.put(Session.SERVER, server);
         session.put(Session.TTY, term);
+        //session id uuid
         this.id = UUID.randomUUID().toString();
         session.put(Session.ID, id);
         this.commandManager = commandManager;
@@ -78,6 +79,7 @@ public class ShellImpl implements Shell {
 
     @Override
     public synchronized Job createJob(List<CliToken> args) {
+        //创建job
         Job job = jobController.createJob(commandManager, args, session, new ShellJobHandler(this), term, null);
         return job;
     }
@@ -152,6 +154,7 @@ public class ShellImpl implements Shell {
     }
 
     public void readline() {
+        //ShellLineHandler.handle对命令进行处理
         term.readline(prompt, new ShellLineHandler(this),
                 new CommandManagerCompletionHandler(commandManager));
     }

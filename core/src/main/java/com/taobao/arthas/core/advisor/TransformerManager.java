@@ -12,12 +12,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author hengyunabc 2020-05-18
  *
  */
+//转换管理
 public class TransformerManager {
 
     private Instrumentation instrumentation;
-    private List<ClassFileTransformer> watchTransformers = new CopyOnWriteArrayList<ClassFileTransformer>();
-    private List<ClassFileTransformer> traceTransformers = new CopyOnWriteArrayList<ClassFileTransformer>();
+    //watch 命令 ClassFileTransformer
+    private List<ClassFileTransformer> watchTransformers = new CopyOnWriteArrayList();
+    //trace 命令 ClassFileTransformer
+    private List<ClassFileTransformer> traceTransformers = new CopyOnWriteArrayList();
 
+    //transform管理器的 classFileTransformer
     private ClassFileTransformer classFileTransformer;
 
     public TransformerManager(Instrumentation instrumentation) {
@@ -29,15 +33,18 @@ public class TransformerManager {
             public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                     ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
 
+                //依次transform watchTransformers
                 for (ClassFileTransformer classFileTransformer : watchTransformers) {
+                    //transform 生成新的字节码
                     byte[] transformResult = classFileTransformer.transform(loader, className, classBeingRedefined,
                             protectionDomain, classfileBuffer);
                     if (transformResult != null) {
                         classfileBuffer = transformResult;
                     }
                 }
-
+                //依次transform traceTransformers
                 for (ClassFileTransformer classFileTransformer : traceTransformers) {
+                    //transform 生成新的字节码
                     byte[] transformResult = classFileTransformer.transform(loader, className, classBeingRedefined,
                             protectionDomain, classfileBuffer);
                     if (transformResult != null) {
@@ -49,6 +56,7 @@ public class TransformerManager {
             }
 
         };
+        // instrumentation 添加 classFileTransformer
         instrumentation.addTransformer(classFileTransformer, true);
     }
 

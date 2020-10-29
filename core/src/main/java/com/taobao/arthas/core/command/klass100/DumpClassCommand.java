@@ -35,6 +35,7 @@ import static com.taobao.text.ui.Element.label;
 /**
  * Dump class byte array
  */
+//dump class文件 命令
 @Name("dump")
 @Summary("Dump class byte array from JVM")
 @Description(Constants.EXAMPLE +
@@ -123,6 +124,7 @@ public class DumpClassCommand extends AnnotatedCommand {
 
     private void processMatch(CommandProcess process, RowAffect effect, Instrumentation inst, Set<Class<?>> matchedClasses) {
         try {
+            //dump class
             Map<Class<?>, File> classFiles = dump(inst, matchedClasses);
             TableElement table = new TableElement().leftCellPadding(1).rightCellPadding(1);
             table.row(new LabelElement("HASHCODE").style(Decoration.bold.bold()),
@@ -168,12 +170,13 @@ public class DumpClassCommand extends AnnotatedCommand {
     }
 
     private Map<Class<?>, File> dump(Instrumentation inst, Set<Class<?>> classes) throws UnmodifiableClassException {
-        ClassDumpTransformer transformer = null;
+        ClassDumpTransformer transformer ;
         if (directory != null) {
             transformer = new ClassDumpTransformer(classes, new File(directory));
         } else {
             transformer = new ClassDumpTransformer(classes);
         }
+        //Instrumentation retransformClasses
         InstrumentationUtils.retransformClasses(inst, transformer, classes);
         return transformer.getDumpResult();
     }

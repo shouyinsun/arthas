@@ -50,6 +50,8 @@ import static java.lang.String.format;
         "  tt -i 1000 -p --replay-times 3 --replay-interval 3000\n" +
         "  tt --delete-all\n" +
         Constants.WIKI + Constants.WIKI_HOME + "tt")
+//TT TimeTunnel 命令
+// 记录指定方法每次调用的入参和返回信息
 public class TimeTunnelCommand extends EnhancerCommand {
     // 时间隧道(时间碎片的集合)
     // TODO 并非线程安全？

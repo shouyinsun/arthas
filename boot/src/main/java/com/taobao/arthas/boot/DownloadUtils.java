@@ -28,6 +28,7 @@ import com.taobao.arthas.common.IOUtils;
  * @author hengyunabc 2018-11-06
  *
  */
+//maven镜像下载
 public class DownloadUtils {
     private static final String MAVEN_METADATA_URL = "${REPO}/com/taobao/arthas/arthas-packaging/maven-metadata.xml";
     private static final String REMOTE_DOWNLOAD_URL = "${REPO}/com/taobao/arthas/arthas-packaging/${VERSION}/arthas-packaging-${VERSION}-bin.zip";
@@ -72,7 +73,8 @@ public class DownloadUtils {
         return result;
     }
 
-    public static String readMavenMetaData(String repoMirror, boolean http) {
+    ////maven-metadata.xml metadata信息
+    public static String readMavenMetaData(String repoMirror, boolean http) {//maven-metadata
         String repoUrl = getRepoUrl(repoMirror, http);
         String metaDataUrl = MAVEN_METADATA_URL.replace("${REPO}", repoUrl);
         AnsiLog.debug("Download maven-metadata.xml from: {}", metaDataUrl);
@@ -94,7 +96,7 @@ public class DownloadUtils {
         return null;
     }
 
-    public static String getRepoUrl(String repoMirror, boolean http) {
+    public static String getRepoUrl(String repoMirror, boolean http) {//仓库地址
         repoMirror = repoMirror.trim();
         String repoUrl;
         if (repoMirror.equals("center")) {
@@ -114,6 +116,7 @@ public class DownloadUtils {
         return repoUrl;
     }
 
+    //下载arthas包
     public static void downArthasPackaging(String repoMirror, boolean http, String arthasVersion, String savePath)
             throws IOException {
         String repoUrl = getRepoUrl(repoMirror, http);
@@ -126,6 +129,7 @@ public class DownloadUtils {
 
         String remoteDownloadUrl = REMOTE_DOWNLOAD_URL.replace("${REPO}", repoUrl).replace("${VERSION}", arthasVersion);
         AnsiLog.info("Start download arthas from remote server: " + remoteDownloadUrl);
+        //下载zip然后解压
         saveUrl(tempFile.getAbsolutePath(), remoteDownloadUrl, true);
         AnsiLog.info("Download arthas success.");
         IOUtils.unzip(tempFile.getAbsolutePath(), unzipDir.getAbsolutePath());

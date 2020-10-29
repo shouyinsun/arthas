@@ -22,7 +22,9 @@ public class Configure {
     private int telnetPort;
     private int httpPort;
     private long javaPid;
+    //arthas core 路径
     private String arthasCore;
+    //arthas agent 路径
     private String arthasAgent;
 
     private String tunnelServer;
@@ -31,6 +33,7 @@ public class Configure {
     /**
      * report executed command
      */
+    //上报统计url
     private String statUrl;
 
     /**
@@ -126,7 +129,7 @@ public class Configure {
     @Override
     public String toString() {
 
-        final Map<String, String> map = new HashMap<String, String>();
+        final Map<String, String> map = new HashMap();
         for (Field field : ArthasReflectUtils.getFields(Configure.class)) {
 
             // 过滤掉静态类

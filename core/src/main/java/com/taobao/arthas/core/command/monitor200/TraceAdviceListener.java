@@ -7,6 +7,7 @@ import com.taobao.arthas.core.util.StringUtils;
 /**
  * @author beiwei30 on 29/11/2016.
  */
+//trace 通知监听
 public class TraceAdviceListener extends AbstractTraceAdviceListener implements InvokeTraceable {
 
     /**

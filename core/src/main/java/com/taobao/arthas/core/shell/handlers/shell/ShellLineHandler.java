@@ -57,7 +57,7 @@ public class ShellLineHandler implements Handler<String> {
             handleKill(tokens);
             return;
         }
-
+        //每个请求都封装成job
         Job job = createJob(tokens);
         if (job != null) {
             job.run();
@@ -77,6 +77,7 @@ public class ShellLineHandler implements Handler<String> {
         return result;
     }
 
+    //创建job
     private Job createJob(List<CliToken> tokens) {
         Job job;
         try {

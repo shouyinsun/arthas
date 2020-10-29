@@ -39,6 +39,8 @@ import java.util.List;
         "  trace demo.MathGame run --skipJDKMethod false\n" +
         Constants.WIKI + Constants.WIKI_HOME + "trace")
 //@formatter:on
+//trace 命令
+// 方法内部调用路径,并输出方法路径上的每个节点上耗时
 public class TraceCommand extends EnhancerCommand {
 
     private String classPattern;
@@ -47,6 +49,7 @@ public class TraceCommand extends EnhancerCommand {
     private boolean isRegEx = false;
     private int numberOfLimit = 100;
     private List<String> pathPatterns;
+    //jdk中的不进行trace
     private boolean skipJDKTrace;
 
     @Argument(argName = "class-pattern", index = 0)

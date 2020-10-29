@@ -17,9 +17,14 @@ import com.taobao.arthas.agent.ArthasClassloader;
  *
  * @author vlinux on 15/5/19.
  */
+//attach 的jvm
+// loadAgent
 public class AgentBootstrap {
+    //arthas-spy.jar
     private static final String ARTHAS_SPY_JAR = "arthas-spy.jar";
+    //arthas-core.jar
     private static final String ARTHAS_CORE_JAR = "arthas-core.jar";
+    //反射 ArthasBootstrap
     private static final String ARTHAS_BOOTSTRAP = "com.taobao.arthas.core.server.ArthasBootstrap";
     private static final String GET_INSTANCE = "getInstance";
     private static final String IS_BIND = "isBind";
@@ -56,11 +61,13 @@ public class AgentBootstrap {
     // 全局持有classloader用于隔离 Arthas 实现
     private static volatile ClassLoader arthasClassLoader;
 
+    //premain 传递 Instrumentation 参数
     public static void premain(String args, Instrumentation inst) {
         main(args, inst);
     }
 
-    public static void agentmain(String args, Instrumentation inst) {
+    //agentmain 传递 Instrumentation 参数
+    public static void agentmain(String args, Instrumentation inst) {//agentmain
         main(args, inst);
     }
 
@@ -72,7 +79,6 @@ public class AgentBootstrap {
     }
 
     private static ClassLoader getClassLoader(Instrumentation inst, File spyJarFile, File arthasCoreJarFile) throws Throwable {
-        // 将Spy添加到BootstrapClassLoader
         ClassLoader parent = ClassLoader.getSystemClassLoader().getParent();
         Class<?> spyClass = null;
         if (parent != null) {
@@ -82,6 +88,7 @@ public class AgentBootstrap {
                 // ignore
             }
         }
+        //将Spy添加到BootstrapClassLoader
         if (spyClass == null) {
             inst.appendToBootstrapClassLoaderSearch(new JarFile(spyJarFile));
         }
@@ -150,10 +157,12 @@ public class AgentBootstrap {
              */
             final ClassLoader agentLoader = getClassLoader(inst, spyJarFile, arthasCoreJarFile);
 
+            //ArthasBootstrap 绑定 bind
             Thread bindingThread = new Thread() {
                 @Override
                 public void run() {
                     try {
+                        //实例化ArthasBootstrap
                         bind(inst, agentLoader, agentArgs);
                     } catch (Throwable throwable) {
                         throwable.printStackTrace(ps);
@@ -183,11 +192,14 @@ public class AgentBootstrap {
          * ArthasBootstrap bootstrap = ArthasBootstrap.getInstance(inst);
          * </pre>
          */
+        //ArthasBootstrap
         Class<?> bootstrapClass = agentLoader.loadClass(ARTHAS_BOOTSTRAP);
+        //getInstance 方法
         Object bootstrap = bootstrapClass.getMethod(GET_INSTANCE, Instrumentation.class, String.class).invoke(null, inst, args);
         boolean isBind = (Boolean) bootstrapClass.getMethod(IS_BIND).invoke(bootstrap);
         if (!isBind) {
             try {
+                //ArthasBootstrap bind
                 ps.println("Arthas start to bind...");
                 bootstrapClass.getMethod(BIND, String.class).invoke(bootstrap, args);
                 ps.println("Arthas server bind success.");

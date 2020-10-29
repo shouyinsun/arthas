@@ -15,6 +15,7 @@ import com.taobao.arthas.core.view.ObjectView;
 /**
  * @author beiwei30 on 29/11/2016.
  */
+//watch 通知监听
 class WatchAdviceListener extends AdviceListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(WatchAdviceListener.class);

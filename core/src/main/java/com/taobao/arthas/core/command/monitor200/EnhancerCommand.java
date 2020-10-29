@@ -28,6 +28,7 @@ import com.taobao.middleware.cli.annotations.Option;
 /**
  * @author beiwei30 on 29/11/2016.
  */
+//增强 命令
 public abstract class EnhancerCommand extends AnnotatedCommand {
 
     private static final Logger logger = LoggerFactory.getLogger(EnhancerCommand.class);
@@ -74,6 +75,7 @@ public abstract class EnhancerCommand extends AnnotatedCommand {
                 return listener;
             }
         }
+        //子类实现,获取对应的监听器
         return getAdviceListener(process);
     }
     @Override
@@ -83,7 +85,8 @@ public abstract class EnhancerCommand extends AnnotatedCommand {
         // q exit support
         process.stdinHandler(new QExitHandler(process));
 
-        // start to enhance
+        //process 处理
+        // enhance 增强
         enhance(process);
     }
 
@@ -109,16 +112,19 @@ public abstract class EnhancerCommand extends AnnotatedCommand {
         super.complete(completion);
     }
 
+    //增强操作
     protected void enhance(CommandProcess process) {
         Session session = process.session();
-        if (!session.tryLock()) {
+        if (!session.tryLock()) {//session锁
             process.write("someone else is enhancing classes, pls. wait.\n");
             process.end();
             return;
         }
         int lock = session.getLock();
         try {
+            //java instrumentation
             Instrumentation inst = session.getInstrumentation();
+            //获取通知监听
             AdviceListener listener = getAdviceListenerWithId(process);
             if (listener == null) {
                 warn(process, "advice listener is null");
@@ -128,10 +134,11 @@ public abstract class EnhancerCommand extends AnnotatedCommand {
             if(listener instanceof AbstractTraceAdviceListener) {
                 skipJDKTrace = ((AbstractTraceAdviceListener) listener).getCommand().isSkipJDKTrace();
             }
-
+            //增强器  ClassFileTransformer
             Enhancer enhancer = new Enhancer(listener, listener instanceof InvokeTraceable, skipJDKTrace, getClassNameMatcher(), getMethodNameMatcher());
             // 注册通知监听器
             process.register(listener, enhancer);
+            //enhance 增强
             EnhancerAffect effect = enhancer.enhance(inst);
 
             if (effect.getThrowable() != null) {

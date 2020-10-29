@@ -23,6 +23,7 @@ import java.util.concurrent.*;
  *
  * @author gongdewei 2020-03-20
  */
+//arthas session 管理
 public class SessionManagerImpl implements SessionManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionManagerImpl.class);
     private final ArthasBootstrap bootstrap;

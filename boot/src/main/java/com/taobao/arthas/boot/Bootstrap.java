@@ -59,7 +59,9 @@ import static com.taobao.arthas.boot.ProcessUtils.STATUS_EXEC_TIMEOUT;
                 + "  java -jar arthas-boot.jar --repo-mirror aliyun --use-http\n" + "WIKI:\n"
                 + "  https://alibaba.github.io/arthas\n")
 public class Bootstrap {
+    //默认telnet 端口  3658
     private static final int DEFAULT_TELNET_PORT = 3658;
+    //默认http 端口 8563
     private static final int DEFAULT_HTTP_PORT = 8563;
     private static final String DEFAULT_TARGET_IP = "127.0.0.1";
     private static File ARTHAS_LIB_DIR;
@@ -285,10 +287,13 @@ public class Bootstrap {
 
         Bootstrap bootstrap = new Bootstrap();
 
+        //command-line interface 命令行界面
         CLI cli = CLIConfigurator.define(Bootstrap.class);
+        //命令行
         CommandLine commandLine = cli.parse(Arrays.asList(args));
 
         try {
+            //set 属性值
             CLIConfigurator.inject(commandLine, bootstrap);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -304,9 +309,11 @@ public class Bootstrap {
             System.exit(0);
         }
 
+        //仓库镜像
         if (bootstrap.getRepoMirror() == null || bootstrap.getRepoMirror().trim().isEmpty()) {
             bootstrap.setRepoMirror("center");
             // if timezone is +0800, default repo mirror is aliyun
+            //东八区使用aliyun镜像
             if (TimeUnit.MILLISECONDS.toHours(TimeZone.getDefault().getOffset(System.currentTimeMillis())) == 8) {
                 bootstrap.setRepoMirror("aliyun");
             }
@@ -345,7 +352,7 @@ public class Bootstrap {
 
         long pid = bootstrap.getPid();
         // select pid
-        if (pid < 0) {
+        if (pid < 0) {//选择pid
             try {
                 pid = ProcessUtils.select(bootstrap.isVerbose(), telnetPortPid, bootstrap.getSelect());
             } catch (InputMismatchException e) {
@@ -471,7 +478,7 @@ public class Bootstrap {
 
         if (telnetPortPid > 0 && pid == telnetPortPid) {
             AnsiLog.info("The target process already listen port {}, skip attach.", bootstrap.getTelnetPort());
-        } else {
+        } else {//启动core arthas-core
             //double check telnet port and pid before attach
             telnetPortPid = findProcessByTelnetClient(arthasHomeDir.getAbsolutePath(), bootstrap.getTelnetPort());
             checkTelnetPortPid(bootstrap, telnetPortPid, pid);
@@ -489,8 +496,10 @@ public class Bootstrap {
             attachArgs.add("-http-port");
             attachArgs.add("" + bootstrap.getHttpPort());
             attachArgs.add("-core");
+            //arthas-core.jar 路径
             attachArgs.add(new File(arthasHomeDir, "arthas-core.jar").getAbsolutePath());
             attachArgs.add("-agent");
+            //arthas-agent.jar 路径
             attachArgs.add(new File(arthasHomeDir, "arthas-agent.jar").getAbsolutePath());
             if (bootstrap.getSessionTimeout() != null) {
                 attachArgs.add("-session-timeout");
@@ -512,6 +521,7 @@ public class Bootstrap {
 
             AnsiLog.info("Try to attach process " + pid);
             AnsiLog.debug("Start arthas-core.jar args: " + attachArgs);
+            // com.taobao.arthas.core.Arthas
             ProcessUtils.startArthasCore(pid, attachArgs);
 
             AnsiLog.info("Attach process {} success.", pid);
@@ -521,7 +531,9 @@ public class Bootstrap {
             System.exit(0);
         }
 
-        // start java telnet client
+        // 启动 Arthas Telnet Client
+        // TelnetConsole
+        // telnet 连接
         // find arthas-client.jar
         URLClassLoader classLoader = new URLClassLoader(
                         new URL[] { new File(arthasHomeDir, "arthas-client.jar").toURI().toURL() });

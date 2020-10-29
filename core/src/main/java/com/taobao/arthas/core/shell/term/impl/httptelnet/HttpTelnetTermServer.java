@@ -21,6 +21,7 @@ import io.termd.core.tty.TtyConnection;
  * @author hengyunabc 2019-11-04
  *
  */
+// http/telnet 终端 server
 public class HttpTelnetTermServer extends TermServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpTelnetTermServer.class);
@@ -53,6 +54,7 @@ public class HttpTelnetTermServer extends TermServer {
             bootstrap.start(new Consumer<TtyConnection>() {
                 @Override
                 public void accept(final TtyConnection conn) {
+                    //handle
                     termHandler.handle(new TermImpl(Helper.loadKeymap(), conn));
                 }
             }).get(connectionTimeout, TimeUnit.MILLISECONDS);

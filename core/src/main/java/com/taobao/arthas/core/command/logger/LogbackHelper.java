@@ -26,6 +26,7 @@ import ch.qos.logback.core.pattern.PatternLayoutBase;
  * @author hengyunabc 2019-09-06
  *
  */
+//logback
 public class LogbackHelper {
 
     private static boolean Logback = false;
@@ -75,6 +76,7 @@ public class LogbackHelper {
         return null;
     }
 
+    //getLogger
     public static Map<String, Map<String, Object>> getLoggers(String name, boolean includeNoAppender) {
         Map<String, Map<String, Object>> loggerInfoMap = new LinkedHashMap<String, Map<String, Object>>();
 

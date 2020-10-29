@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author hengyunabc 2019-05-14
  * @author gongdewei 2020-03-23
  */
+//job管理器
 public class JobControllerImpl implements JobController {
 
     private final SortedMap<Integer, JobImpl> jobs = new TreeMap<Integer, JobImpl>();
@@ -62,12 +63,14 @@ public class JobControllerImpl implements JobController {
 
     @Override
     public Job createJob(InternalCommandManager commandManager, List<CliToken> tokens, Session session, JobListener jobHandler, Term term, ResultDistributor resultDistributor) {
+        //jobId
         int jobId = idGenerator.incrementAndGet();
         StringBuilder line = new StringBuilder();
         for (CliToken arg : tokens) {
             line.append(arg.raw());
         }
         boolean runInBackground = runInBackground(tokens);
+        //创建process
         Process process = createProcess(tokens, commandManager, jobId, term, resultDistributor);
         process.setJobId(jobId);
         JobImpl job = new JobImpl(jobId, this, process, line.toString(), runInBackground, session, jobHandler);
@@ -132,6 +135,7 @@ public class JobControllerImpl implements JobController {
             while (tokens.hasNext()) {
                 CliToken token = tokens.next();
                 if (token.isText()) {
+                    //识别命令
                     Command command = commandManager.getCommand(token.value());
                     if (command != null) {
                         return createCommandProcess(command, tokens, jobId, term, resultDistributor);
@@ -149,6 +153,7 @@ public class JobControllerImpl implements JobController {
     private boolean runInBackground(List<CliToken> tokens) {
         boolean runInBackground = false;
         CliToken last = TokenUtils.findLastTextToken(tokens);
+        //& 后台运行
         if (last != null && "&".equals(last.value())) {
             runInBackground = true;
             tokens.remove(last);
@@ -157,11 +162,11 @@ public class JobControllerImpl implements JobController {
     }
 
     private Process createCommandProcess(Command command, ListIterator<CliToken> tokens, int jobId, Term term, ResultDistributor resultDistributor) throws IOException {
-        List<CliToken> remaining = new ArrayList<CliToken>();
-        List<CliToken> pipelineTokens = new ArrayList<CliToken>();
+        List<CliToken> remaining = new ArrayList();
+        List<CliToken> pipelineTokens = new ArrayList();
         boolean isPipeline = false;
         RedirectHandler redirectHandler = null;
-        List<Function<String, String>> stdoutHandlerChain = new ArrayList<Function<String, String>>();
+        List<Function<String, String>> stdoutHandlerChain = new ArrayList();
         String cacheLocation = null;
         while (tokens.hasNext()) {
             CliToken remainingToken = tokens.next();

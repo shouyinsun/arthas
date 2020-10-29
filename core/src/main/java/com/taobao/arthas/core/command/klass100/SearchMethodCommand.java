@@ -38,6 +38,8 @@ import com.taobao.text.util.RenderUtil;
  * @author vlinux
  * @author hengyunabc 2019-02-13
  */
+//sm
+// search method 查询类的方法 命令
 @Name("sm")
 @Summary("Search the method of classes loaded by JVM")
 @Description(Constants.EXAMPLE +
@@ -96,7 +98,7 @@ public class SearchMethodCommand extends AnnotatedCommand {
 
         for (Class<?> clazz : matchedClasses) {
             try {
-                for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+                for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {//构造器
                     String methodNameWithDescriptor = com.alibaba.arthas.deps.org.objectweb.asm.commons.Method.getMethod(constructor).toString();
                     if (!methodNameMatcher.matching("<init>")) {
                         continue;
@@ -111,6 +113,9 @@ public class SearchMethodCommand extends AnnotatedCommand {
                     affect.rCnt(1);
                 }
 
+                // public, protected, default (package)access,private methods
+                // but excluding inherited methods
+                // 所有申明的方法,包括私有的,但不包含继承的
                 for (Method method : clazz.getDeclaredMethods()) {
                     String methodNameWithDescriptor = com.alibaba.arthas.deps.org.objectweb.asm.commons.Method.getMethod(method).toString();
                     if (!methodNameMatcher.matching(method.getName())) {

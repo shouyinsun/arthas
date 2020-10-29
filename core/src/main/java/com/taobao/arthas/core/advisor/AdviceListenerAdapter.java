@@ -15,9 +15,11 @@ import com.taobao.arthas.core.util.StringUtils;
  * @author hengyunabc 2020-05-20
  *
  */
+//advice通知监听适配器
 public abstract class AdviceListenerAdapter implements AdviceListener, ProcessAware {
     private static final  AtomicLong ID_GENERATOR = new AtomicLong(0);
     private Process process;
+    //listen id
     private long id = ID_GENERATOR.addAndGet(1);
 
     @Override

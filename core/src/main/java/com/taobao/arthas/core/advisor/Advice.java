@@ -3,6 +3,7 @@ package com.taobao.arthas.core.advisor;
 /**
  * 通知点 Created by vlinux on 15/5/20.
  */
+//通知
 public class Advice {
 
     private final ClassLoader loader;

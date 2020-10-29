@@ -19,7 +19,7 @@ abstract public class ThreadUtil {
 
     private static ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
-    public static ThreadGroup getRoot() {
+    public static ThreadGroup getRoot() {//root线程组
         ThreadGroup group = Thread.currentThread().getThreadGroup();
         ThreadGroup parent;
         while ((parent = group.getParent()) != null) {
@@ -34,8 +34,10 @@ abstract public class ThreadUtil {
      * @return
      */
     public static Map<String, Thread> getThreads() {
+        //root线程组
         ThreadGroup root = getRoot();
         Thread[] threads = new Thread[root.activeCount()];
+        //所有线程
         while (root.enumerate(threads, true) == threads.length) {
             threads = new Thread[threads.length * 2];
         }
@@ -79,16 +81,19 @@ abstract public class ThreadUtil {
      * @param topN the number of thread
      * @return a Map representing <ThreadID, cpuUsage>
      */
+    //top N 忙碌的线程
+    //线程CPU使用率 = 线程增量CPU时间 / 采样间隔时间 * 100%
     public static Map<Long, Long> getTopNThreads(int sampleInterval, int topN) {
         List<Thread> threads = getThreadList();
 
         // Sample CPU
-        Map<Long, Long> times1 = new HashMap<Long, Long>();
+        Map<Long, Long> times1 = new HashMap();
         for (Thread thread : threads) {
             long cpu = threadMXBean.getThreadCpuTime(thread.getId());
             times1.put(thread.getId(), cpu);
         }
 
+        //再次取样间隔
         try {
             // Sleep for some time
             Thread.sleep(sampleInterval);
@@ -98,7 +103,7 @@ abstract public class ThreadUtil {
         }
 
         // Resample
-        Map<Long, Long> times2 = new HashMap<Long, Long>(threads.size());
+        Map<Long, Long> times2 = new HashMap(threads.size());
         for (Thread thread : threads) {
             long cpu = threadMXBean.getThreadCpuTime(thread.getId());
             times2.put(thread.getId(), cpu);
@@ -106,7 +111,8 @@ abstract public class ThreadUtil {
 
         // Compute delta map and total time
         long total = 0;
-        Map<Long, Long> deltas = new HashMap<Long, Long>(threads.size());
+        //线程cpu时间增量 delta
+        Map<Long, Long> deltas = new HashMap(threads.size());
         for (Long id : times2.keySet()) {
             long time1 = times2.get(id);
             long time2 = times1.get(id);
@@ -121,7 +127,7 @@ abstract public class ThreadUtil {
         }
 
         // Compute cpu
-        final HashMap<Thread, Long> cpus = new HashMap<Thread, Long>(threads.size());
+        final HashMap<Thread, Long> cpus = new HashMap(threads.size());
         for (Thread thread : threads) {
             long cpu = total == 0 ? 0 : Math.round((deltas.get(thread.getId()) * 100) / total);
             cpus.put(thread, cpu);
@@ -143,7 +149,7 @@ abstract public class ThreadUtil {
         });
 
         // use LinkedHashMap to preserve insert order
-        Map<Long, Long> topNThreads = new LinkedHashMap<Long, Long>();
+        Map<Long, Long> topNThreads = new LinkedHashMap();
 
         List<Thread> topThreads = topN > 0 && topN <= threads.size()
                 ? threads.subList(0, topN) : threads;
@@ -170,9 +176,9 @@ abstract public class ThreadUtil {
                 threadMXBean.isSynchronizerUsageSupported());
 
         // a map of <LockInfo.getIdentityHashCode, number of thread blocking on this>
-        Map<Integer, Integer> blockCountPerLock = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> blockCountPerLock = new HashMap();
         // a map of <LockInfo.getIdentityHashCode, the thread info that holding this lock
-        Map<Integer, ThreadInfo> ownerThreadPerLock = new HashMap<Integer, ThreadInfo>();
+        Map<Integer, ThreadInfo> ownerThreadPerLock = new HashMap();
 
         for (ThreadInfo info: infos) {
             if (info == null) {

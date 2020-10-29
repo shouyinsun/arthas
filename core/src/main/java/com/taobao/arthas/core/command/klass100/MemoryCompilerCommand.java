@@ -34,6 +34,7 @@ import com.taobao.middleware.cli.annotations.Summary;
 @Description(Constants.EXAMPLE + "  mc /tmp/Test.java\n" + "  mc -c 327a647b /tmp/Test.java\n"
                 + "  mc -d /tmp/output /tmp/ClassA.java /tmp/ClassB.java\n" + Constants.WIKI + Constants.WIKI_HOME
                 + "mc")
+//mc memory compiler 内存编译 命令
 public class MemoryCompilerCommand extends AnnotatedCommand {
 
     private static final Logger logger = LoggerFactory.getLogger(MemoryCompilerCommand.class);
@@ -75,7 +76,7 @@ public class MemoryCompilerCommand extends AnnotatedCommand {
 
         try {
             Instrumentation inst = process.session().getInstrumentation();
-            ClassLoader classloader = null;
+            ClassLoader classloader ;
             if (hashCode == null) {
                 classloader = ClassLoader.getSystemClassLoader();
             } else {
@@ -87,6 +88,7 @@ public class MemoryCompilerCommand extends AnnotatedCommand {
                 }
             }
 
+            //动态编译器
             DynamicCompiler dynamicCompiler = new DynamicCompiler(classloader);
 
             Charset charset = Charset.defaultCharset();
@@ -103,9 +105,10 @@ public class MemoryCompilerCommand extends AnnotatedCommand {
                 dynamicCompiler.addSource(name, sourceCode);
             }
 
+            //编译,生成字节码
             Map<String, byte[]> byteCodes = dynamicCompiler.buildByteCodes();
 
-            File outputDir = null;
+            File outputDir ;
             if (this.directory != null) {
                 outputDir = new File(this.directory);
             } else {

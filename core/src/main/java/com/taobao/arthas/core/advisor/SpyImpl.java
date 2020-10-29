@@ -14,12 +14,13 @@ import com.taobao.arthas.core.shell.system.ProcessAware;
  * 怎么从 className|methodDesc 到 id 对应起来？？
  * 当id少时，可以id自己来判断是否符合？
  * 
- * 如果是每个 className|methodDesc 为 key ，是否
+ * 如果是每个 className|methodDesc 为 key
  * </pre>
  * 
  * @author hengyunabc 2020-04-24
  *
  */
+//spy的具体实现
 public class SpyImpl extends AbstractSpy {
     private static final Logger logger = LoggerFactory.getLogger(SpyImpl.class);
 
@@ -31,6 +32,8 @@ public class SpyImpl extends AbstractSpy {
         String methodName = info[0];
         String methodDesc = info[1];
         // TODO listener 只用查一次，放到 thread local里保存起来就可以了！
+
+        //查询对应listeners
         List<AdviceListener> listeners = AdviceListenerManager.queryAdviceListeners(classLoader, clazz.getName(),
                 methodName, methodDesc);
         if (listeners != null) {
@@ -39,6 +42,7 @@ public class SpyImpl extends AbstractSpy {
                     if (skipAdviceListener(adviceListener)) {
                         continue;
                     }
+                    //执行listener的before
                     adviceListener.before(clazz, methodName, methodDesc, target, args);
                 } catch (Throwable e) {
                     logger.error("class: {}, methodInfo: {}", clazz.getName(), methodInfo, e);
@@ -56,6 +60,7 @@ public class SpyImpl extends AbstractSpy {
         String methodName = info[0];
         String methodDesc = info[1];
 
+        //查询对应listeners
         List<AdviceListener> listeners = AdviceListenerManager.queryAdviceListeners(classLoader, clazz.getName(),
                 methodName, methodDesc);
         if (listeners != null) {
@@ -64,6 +69,7 @@ public class SpyImpl extends AbstractSpy {
                     if (skipAdviceListener(adviceListener)) {
                         continue;
                     }
+                    //执行listener的afterReturning
                     adviceListener.afterReturning(clazz, methodName, methodDesc, target, args, returnObject);
                 } catch (Throwable e) {
                     logger.error("class: {}, methodInfo: {}", clazz.getName(), methodInfo, e);
@@ -80,6 +86,7 @@ public class SpyImpl extends AbstractSpy {
         String methodName = info[0];
         String methodDesc = info[1];
 
+        //查询对应listeners
         List<AdviceListener> listeners = AdviceListenerManager.queryAdviceListeners(classLoader, clazz.getName(),
                 methodName, methodDesc);
         if (listeners != null) {
@@ -88,6 +95,7 @@ public class SpyImpl extends AbstractSpy {
                     if (skipAdviceListener(adviceListener)) {
                         continue;
                     }
+                    //执行listener的afterThrowing
                     adviceListener.afterThrowing(clazz, methodName, methodDesc, target, args, throwable);
                 } catch (Throwable e) {
                     logger.error("class: {}, methodInfo: {}", clazz.getName(), methodInfo, e);
@@ -104,6 +112,7 @@ public class SpyImpl extends AbstractSpy {
         String methodName = info[1];
         String methodDesc = info[2];
 
+        //查询对应listeners
         List<AdviceListener> listeners = AdviceListenerManager.queryTraceAdviceListeners(classLoader, clazz.getName(),
                 owner, methodName, methodDesc);
 
@@ -129,6 +138,7 @@ public class SpyImpl extends AbstractSpy {
         String owner = info[0];
         String methodName = info[1];
         String methodDesc = info[2];
+        //查询对应listeners
         List<AdviceListener> listeners = AdviceListenerManager.queryTraceAdviceListeners(classLoader, clazz.getName(),
                 owner, methodName, methodDesc);
 
@@ -156,6 +166,7 @@ public class SpyImpl extends AbstractSpy {
         String methodName = info[1];
         String methodDesc = info[2];
 
+        //查询对应listeners
         List<AdviceListener> listeners = AdviceListenerManager.queryTraceAdviceListeners(classLoader, clazz.getName(),
                 owner, methodName, methodDesc);
 

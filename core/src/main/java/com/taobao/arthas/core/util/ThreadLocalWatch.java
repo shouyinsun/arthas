@@ -6,8 +6,11 @@ package com.taobao.arthas.core.util;
  * @author vlinux 16/6/1.
  * @author hengyunabc 2016-10-31
  */
+//ThreadLocalWatch
+// threadLocal的调用计数器
 public class ThreadLocalWatch {
 
+    //使用stack来存储时间戳,push/pop适用方法层次调用
     private final ThreadLocal<LongStack> timestampRef = new ThreadLocal<LongStack>() {
         @Override
         protected LongStack initialValue() {
@@ -42,7 +45,7 @@ public class ThreadLocalWatch {
      * @author hengyunabc 2019-11-20
      *
      */
-    static class LongStack {
+    static class LongStack {//固定大小的stack,超过容量会重置，全部覆盖
         private long[] array;
         private int pos = 0;
         private int cap;

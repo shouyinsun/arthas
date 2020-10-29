@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author beiwei30 on 18/11/2016.
  */
+//http终端server
 public class HttpTermServer extends TermServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpTermServer.class);
@@ -48,6 +49,7 @@ public class HttpTermServer extends TermServer {
             bootstrap.start(new Consumer<TtyConnection>() {
                 @Override
                 public void accept(final TtyConnection conn) {
+                    //handle
                     termHandler.handle(new TermImpl(Helper.loadKeymap(), conn));
                 }
             }).get(connectionTimeout, TimeUnit.MILLISECONDS);

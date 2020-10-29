@@ -23,6 +23,7 @@ import com.taobao.text.util.RenderUtil;
  * @author hengyunabc 2018-11-09
  *
  */
+//系统环境 命令
 @Name("sysenv")
 @Summary("Display the system env.")
 @Description(Constants.EXAMPLE + "  sysenv\n" + "  sysenv USER\n" + Constants.WIKI + Constants.WIKI_HOME + "sysenv")

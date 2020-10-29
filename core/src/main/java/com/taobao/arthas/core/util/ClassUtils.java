@@ -31,6 +31,7 @@ public class ClassUtils {
         return renderClassInfo(clazz, false, null);
     }
 
+    //绘制类的信息
     public static Element renderClassInfo(Class<?> clazz, boolean isPrintField, Integer expand) {
         TableElement table = new TableElement().leftCellPadding(1).rightCellPadding(1);
         CodeSource cs = clazz.getProtectionDomain().getCodeSource();

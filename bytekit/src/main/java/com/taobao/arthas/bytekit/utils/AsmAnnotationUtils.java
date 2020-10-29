@@ -15,7 +15,7 @@ public class AsmAnnotationUtils {
 
     public static List<String> queryAnnotationInfo(List<AnnotationNode> annotations, String annotationType,
             String key) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList();
         if (annotations != null) {
             for (AnnotationNode annotationNode : annotations) {
                 if (annotationNode.desc.equals(annotationType)) {
@@ -55,7 +55,6 @@ public class AsmAnnotationUtils {
         }
 
         // 查找有没有对应的key
-        String name = null;
         List<String> values = null;
         Iterator<Object> iterator = annotationNode.values.iterator();
         while (iterator.hasNext()) {

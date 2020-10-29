@@ -24,6 +24,7 @@ import com.taobao.middleware.cli.annotations.Summary;
  * @author hengyunabc 2019-09-02
  *
  */
+//堆dump 命令
 @Name("heapdump")
 @Summary("Heap dump")
 @Description("\nExamples:\n" + "  heapdump\n" + "  heapdump --live\n" + "  heapdump --live /tmp/dump.hprof\n"
@@ -75,8 +76,10 @@ public class HeapDumpCommand extends AnnotatedCommand {
     }
 
     private static void run(CommandProcess process, String file, boolean live) throws IOException {
+        //HotSpotDiagnosticMXBean
         HotSpotDiagnosticMXBean hotSpotDiagnosticMXBean = ManagementFactory
                         .getPlatformMXBean(HotSpotDiagnosticMXBean.class);
+        //dumpHeap
         hotSpotDiagnosticMXBean.dumpHeap(file, live);
     }
 

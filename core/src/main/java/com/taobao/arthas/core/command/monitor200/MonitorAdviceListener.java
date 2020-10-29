@@ -66,11 +66,13 @@ import static com.taobao.text.ui.Element.label;
  *
  * @author beiwei30 on 28/11/2016.
  */
+//监控通知监听器
+// 调用次数,失败、成功，调用耗时
 class MonitorAdviceListener extends AdviceListenerAdapter {
-    // 输出定时任务
+    // 定时器
     private Timer timer;
     // 监控数据
-    private ConcurrentHashMap<Key, AtomicReference<Data>> monitorData = new ConcurrentHashMap<Key, AtomicReference<Data>>();
+    private ConcurrentHashMap<Key, AtomicReference<Data>> monitorData = new ConcurrentHashMap();
     private final ThreadLocalWatch threadLocalWatch = new ThreadLocalWatch();
     private MonitorCommand command;
     private CommandProcess process;
@@ -84,6 +86,7 @@ class MonitorAdviceListener extends AdviceListenerAdapter {
     public synchronized void create() {
         if (timer == null) {
             timer = new Timer("Timer-for-arthas-monitor-" + process.session().getSessionId(), true);
+            //定时执行MonitorTimer task任务
             timer.scheduleAtFixedRate(new MonitorTimer(monitorData, process, command.getNumberOfLimit()),
                     0, command.getCycle() * 1000);
         }
@@ -100,6 +103,7 @@ class MonitorAdviceListener extends AdviceListenerAdapter {
     @Override
     public void before(ClassLoader loader, Class<?> clazz, ArthasMethod method, Object target, Object[] args)
             throws Throwable {
+        //计时开始
         threadLocalWatch.start();
     }
 
@@ -116,6 +120,7 @@ class MonitorAdviceListener extends AdviceListenerAdapter {
     }
 
     private void finishing(Class<?> clazz, ArthasMethod method, boolean isThrowing) {
+        //耗时计算
         double cost = threadLocalWatch.costInMillis();
         final Key key = new Key(clazz.getName(), method.getName());
 
@@ -146,7 +151,7 @@ class MonitorAdviceListener extends AdviceListenerAdapter {
         }
     }
 
-    private class MonitorTimer extends TimerTask {
+    private class MonitorTimer extends TimerTask {//monitor任务
         private Map<Key, AtomicReference<Data>> monitorData;
         private CommandProcess process;
         private int limit;
@@ -185,6 +190,7 @@ class MonitorAdviceListener extends AdviceListenerAdapter {
                 Data data;
                 while (true) {
                     data = value.get();
+                    //替换个new Data
                     if (value.compareAndSet(data, new Data())) {
                         break;
                     }
@@ -225,6 +231,7 @@ class MonitorAdviceListener extends AdviceListenerAdapter {
      *
      * @author vlinux
      */
+    //监控key值
     private static class Key {
         private final String className;
         private final String methodName;
@@ -264,7 +271,7 @@ class MonitorAdviceListener extends AdviceListenerAdapter {
      *
      * @author vlinux
      */
-    private static class Data {
+    private static class Data {//监控的数据
         private int total;
         private int success;
         private int failed;

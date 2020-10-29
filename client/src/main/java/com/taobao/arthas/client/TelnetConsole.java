@@ -309,6 +309,7 @@ public class TelnetConsole {
         consoleReader.getKeys().bind(new Character(KeyMap.CTRL_D).toString(), eotEventCallback);
 
         try {
+            //client telnet 连接到 server
             telnet.connect(telnetConsole.getTargetIp(), telnetConsole.getPort());
         } catch (IOException e) {
             System.out.println("Connect to telnet server error: " + telnetConsole.getTargetIp() + " "

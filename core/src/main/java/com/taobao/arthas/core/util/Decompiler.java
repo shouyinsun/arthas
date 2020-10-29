@@ -14,6 +14,7 @@ import org.benf.cfr.reader.api.OutputSinkFactory;
  * @author hengyunabc 2018-11-16
  *
  */
+//cfr 反编译
 public class Decompiler {
 
     public static String decompile(String classFilePath, String methodName) {
@@ -61,7 +62,7 @@ public class Decompiler {
         if (!StringUtils.isBlank(methodName)) {
             options.put("methodname", methodName);
         }
-
+        //CfrDriver 驱动
         CfrDriver driver = new CfrDriver.Builder().withOptions(options).withOutputSink(mySink).build();
         List<String> toAnalyse = new ArrayList<String>();
         toAnalyse.add(classFilePath);

@@ -57,6 +57,7 @@ import io.netty.util.concurrent.EventExecutorGroup;
  * @author vlinux on 15/5/2.
  * @author gongdewei 2020-03-25
  */
+//server 启动类
 public class ArthasBootstrap {
     public static final String ARTHAS_HOME_PROPERTY = "arthas.home";
     private static String ARTHAS_SHOME = null;
@@ -74,6 +75,7 @@ public class ArthasBootstrap {
     private Instrumentation instrumentation;
     private Thread shutdown;
     private ShellServer shellServer;
+    //定时 schedule 线程池
     private ScheduledExecutorService executorService;
     private SessionManager sessionManager;
     private TunnelClient tunnelClient;
@@ -102,8 +104,10 @@ public class ArthasBootstrap {
         loggerContext = LogUtil.initLooger(arthasEnvironment);
 
         // 4. start agent server
+        // 启动agent server
         bind(configure);
 
+        //定时 executorService
         executorService = Executors.newScheduledThreadPool(1, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -120,8 +124,9 @@ public class ArthasBootstrap {
                 ArthasBootstrap.this.destroy();
             }
         };
-
+        //转换管理器
         transformerManager = new TransformerManager(instrumentation);
+        //关闭钩子
         Runtime.getRuntime().addShutdownHook(shutdown);
     }
 
@@ -143,7 +148,7 @@ public class ArthasBootstrap {
          */
         Map<String, String> argsMap = FeatureCodec.DEFAULT_COMMANDLINE_CODEC.toMap(args);
         // 给配置全加上前缀
-        Map<String, Object> mapWithPrefix = new HashMap<String, Object>(argsMap.size());
+        Map<String, Object> mapWithPrefix = new HashMap(argsMap.size());
         for (Entry<String, String> entry : argsMap.entrySet()) {
             mapWithPrefix.put("arthas." + entry.getKey(), entry.getValue());
         }
@@ -152,6 +157,7 @@ public class ArthasBootstrap {
         MapPropertySource mapPropertySource = new MapPropertySource("args", mapWithPrefix);
         arthasEnvironment.addFirst(mapPropertySource);
 
+        //arthas.properties
         tryToLoadArthasProperties();
 
         configure = new Configure();
@@ -204,7 +210,7 @@ public class ArthasBootstrap {
         if (new File(location).exists()) {
             Properties properties = FileUtils.readProperties(location);
 
-            boolean overrideAll = false;
+            boolean overrideAll ;
             if (arthasEnvironment.containsProperty(CONFIG_OVERRIDE_ALL)) {
                 overrideAll = arthasEnvironment.getRequiredProperty(CONFIG_OVERRIDE_ALL, boolean.class);
             } else {
@@ -226,6 +232,7 @@ public class ArthasBootstrap {
      * @param configure 配置信息
      * @throws IOException 服务器启动失败
      */
+    //绑定,启动 arthasServer
     public void bind(Configure configure) throws Throwable {
 
         long start = System.currentTimeMillis();
@@ -234,6 +241,7 @@ public class ArthasBootstrap {
             throw new IllegalStateException("already bind");
         }
 
+        //tunnel client
         String agentId = null;
         try {
             if (configure.getTunnelServer() != null && configure.getHttpPort() > 0) {
@@ -247,6 +255,7 @@ public class ArthasBootstrap {
                 }
                 URI uri = new URI("ws", null, host, configure.getHttpPort(), "/ws", null, null);
                 tunnelClient.setLocalServerUrl(uri.toString());
+                //connect tunnelServer
                 ChannelFuture channelFuture = tunnelClient.start();
                 channelFuture.await(10, TimeUnit.SECONDS);
                 if(channelFuture.isSuccess()) {
@@ -257,6 +266,7 @@ public class ArthasBootstrap {
             logger().error("start tunnel client error", t);
         }
 
+        //shell server
         try {
             ShellServerOptions options = new ShellServerOptions()
                             .setInstrumentation(instrumentation)
@@ -264,20 +274,25 @@ public class ArthasBootstrap {
                             .setSessionTimeout(configure.getSessionTimeout() * 1000);
 
             if (agentId != null) {
-                Map<String, String> welcomeInfos = new HashMap<String, String>();
+                Map<String, String> welcomeInfos = new HashMap();
                 welcomeInfos.put("id", agentId);
+                //welcome 欢迎信息
                 options.setWelcomeMessage(ArthasBanner.welcome(welcomeInfos));
             }
 
+            //shell server 处理命令
             shellServer = new ShellServerImpl(options, this);
+            //内嵌的命令
             BuiltinCommandPack builtinCommands = new BuiltinCommandPack();
-            List<CommandResolver> resolvers = new ArrayList<CommandResolver>();
+            List<CommandResolver> resolvers = new ArrayList();
             resolvers.add(builtinCommands);
 
             //worker group
             workerGroup = new NioEventLoopGroup(8);
 
             // TODO: discover user provided command resolver
+            // 注册telnet和http termServer
+            // 提供两种方式访问
             if (configure.getTelnetPort() > 0) {
                 shellServer.registerTermServer(new HttpTelnetTermServer(configure.getIp(), configure.getTelnetPort(),
                         options.getConnectionTimeout(), workerGroup));
@@ -291,10 +306,12 @@ public class ArthasBootstrap {
                 logger().info("http port is {}, skip bind http server.", configure.getHttpPort());
             }
 
+            //命令解析器
             for (CommandResolver resolver : resolvers) {
                 shellServer.registerCommandResolver(resolver);
             }
 
+            //listen 监听
             shellServer.listen(new BindHandler(isBindRef));
 
             //http api session manager
@@ -308,6 +325,7 @@ public class ArthasBootstrap {
                 logger().info("arthas stat url: {}", configure.getStatUrl());
             }
             UserStatUtil.setStatUrl(configure.getStatUrl());
+            //start 上报
             UserStatUtil.arthasStart();
 
             logger().info("as-server started in {} ms", System.currentTimeMillis() - start);

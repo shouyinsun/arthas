@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * @author vlinux on 14/10/26.
  */
+//help 命令
 @Name("help")
 @Summary("Display Arthas Help")
 @Description("Examples:\n" + " help\n" + " help sc\n" + " help sm\n" + " help watch")

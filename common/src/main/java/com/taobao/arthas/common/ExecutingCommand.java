@@ -41,7 +41,7 @@ public class ExecutingCommand {
      *         string if the command failed
      */
     public static List<String> runNative(String[] cmdToRunWithArgs) {
-        Process p = null;
+        Process p ;
         try {
             p = Runtime.getRuntime().exec(cmdToRunWithArgs);
         } catch (SecurityException e) {
@@ -54,7 +54,7 @@ public class ExecutingCommand {
             return new ArrayList<String>(0);
         }
 
-        ArrayList<String> sa = new ArrayList<String>();
+        ArrayList<String> sa = new ArrayList();
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         try {
             String line;

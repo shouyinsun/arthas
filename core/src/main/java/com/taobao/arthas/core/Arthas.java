@@ -19,9 +19,12 @@ import java.util.Properties;
 /**
  * Arthas启动器
  */
+//manifest main class
 public class Arthas {
 
+    //telnet默认端口 3658
     private static final String DEFAULT_TELNET_PORT = "3658";
+    //http默认端口 8563
     private static final String DEFAULT_HTTP_PORT = "8563";
 
     private Arthas(String[] args) throws Exception {
@@ -62,9 +65,10 @@ public class Arthas {
         configure.setIp((String) commandLine.getOptionValue("target-ip"));
         configure.setTelnetPort((Integer) commandLine.getOptionValue("telnet-port"));
         configure.setHttpPort((Integer) commandLine.getOptionValue("http-port"));
-
+        //tunnel server
         configure.setTunnelServer((String) commandLine.getOptionValue("tunnel-server"));
         configure.setAgentId((String) commandLine.getOptionValue("agent-id"));
+        //report统计上报url
         configure.setStatUrl((String) commandLine.getOptionValue("stat-url"));
         return configure;
     }
@@ -72,6 +76,7 @@ public class Arthas {
     private void attachAgent(Configure configure) throws Exception {
         VirtualMachineDescriptor virtualMachineDescriptor = null;
         for (VirtualMachineDescriptor descriptor : VirtualMachine.list()) {
+            //attach pid
             String pid = descriptor.id();
             if (pid.equals(Long.toString(configure.getJavaPid()))) {
                 virtualMachineDescriptor = descriptor;
@@ -89,6 +94,7 @@ public class Arthas {
             Properties targetSystemProperties = virtualMachine.getSystemProperties();
             String targetJavaVersion = JavaVersionUtils.javaVersionStr(targetSystemProperties);
             String currentJavaVersion = JavaVersionUtils.javaVersionStr();
+            //同个jdk
             if (targetJavaVersion != null && currentJavaVersion != null) {
                 if (!targetJavaVersion.equals(currentJavaVersion)) {
                     AnsiLog.warn("Current VM java version: {} do not match target VM java version: {}, attach may fail.",
@@ -102,6 +108,8 @@ public class Arthas {
             //convert jar path to unicode string
             configure.setArthasAgent(encodeArg(arthasAgentPath));
             configure.setArthasCore(encodeArg(configure.getArthasCore()));
+            //目标jvm load agent
+            //其中AgentBootstrap会启动 ArthasBootstrap
             virtualMachine.loadAgent(arthasAgentPath,
                     configure.getArthasCore() + ";" + configure.toString());
         } finally {

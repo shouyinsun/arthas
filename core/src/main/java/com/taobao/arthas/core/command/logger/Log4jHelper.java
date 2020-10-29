@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
  * @author hengyunabc 2019-09-06
  *
  */
+//log4j
 public class Log4jHelper {
 
     private static boolean Log4j = false;
@@ -54,8 +55,9 @@ public class Log4jHelper {
         return null;
     }
 
+    //getLogger
     public static Map<String, Map<String, Object>> getLoggers(String name, boolean includeNoAppender) {
-        Map<String, Map<String, Object>> loggerInfoMap = new HashMap<String, Map<String, Object>>();
+        Map<String, Map<String, Object>> loggerInfoMap = new HashMap();
         if (!Log4j) {
             return loggerInfoMap;
         }
@@ -105,6 +107,7 @@ public class Log4jHelper {
     private static Map<String, Object> doGetLoggerInfo(Logger logger) {
         Map<String, Object> info = new HashMap<String, Object>();
         info.put(LoggerHelper.name, logger.getName());
+        //logger 的class
         info.put(LoggerHelper.clazz, logger.getClass());
         CodeSource codeSource = logger.getClass().getProtectionDomain().getCodeSource();
         if (codeSource != null) {

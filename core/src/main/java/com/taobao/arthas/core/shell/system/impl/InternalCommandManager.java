@@ -17,6 +17,7 @@ import java.util.ListIterator;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
+//命令管理
 public class InternalCommandManager {
 
     private final List<CommandResolver> resolvers;

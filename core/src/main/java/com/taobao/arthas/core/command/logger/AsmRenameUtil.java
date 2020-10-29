@@ -11,6 +11,7 @@ import com.alibaba.arthas.deps.org.objectweb.asm.commons.SimpleRemapper;
  * @author hengyunabc 2019-09-23
  *
  */
+//重命名class
 public class AsmRenameUtil {
 
     public static byte[] renameClass(byte[] bytes, final String oldName, final String newName) {

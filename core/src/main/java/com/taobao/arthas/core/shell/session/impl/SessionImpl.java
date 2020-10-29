@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
+//session 会话
 public class SessionImpl implements Session {
     private final static AtomicInteger lockSequence = new AtomicInteger();
     private final static int LOCK_TX_EMPTY = -1;

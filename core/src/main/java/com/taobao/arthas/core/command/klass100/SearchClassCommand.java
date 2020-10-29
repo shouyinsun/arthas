@@ -28,6 +28,11 @@ import com.taobao.text.util.RenderUtil;
  *
  * @author vlinux
  */
+//sc search class  命令
+    //查看JVM已加载的类信息
+
+
+    //sc -d pattern 查看类的信息,加载的classloader
 @Name("sc")
 @Summary("Search all the classes loaded by JVM")
 @Description(Constants.EXAMPLE +
@@ -85,7 +90,9 @@ public class SearchClassCommand extends AnnotatedCommand {
     public void process(CommandProcess process) {
         // TODO: null check
         RowAffect affect = new RowAffect();
+        //
         Instrumentation inst = process.session().getInstrumentation();
+        //Instrumentation 的 getAllLoadedClasses
         List<Class<?>> matchedClasses = new ArrayList<Class<?>>(SearchUtils.searchClass(inst, classPattern, isRegEx, hashCode));
         Collections.sort(matchedClasses, new Comparator<Class<?>>() {
             @Override

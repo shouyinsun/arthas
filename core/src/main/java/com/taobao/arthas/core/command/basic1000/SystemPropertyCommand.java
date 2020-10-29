@@ -21,6 +21,7 @@ import static com.taobao.text.ui.Element.label;
 /**
  * @author ralf0131 2017-01-09 14:03.
  */
+//系统属性 命令
 @Name("sysprop")
 @Summary("Display, and change the system properties.")
 @Description(Constants.EXAMPLE + "  sysprop\n"+ "  sysprop file.encoding\n" + "  sysprop production.mode true\n" +

@@ -7,6 +7,7 @@ import com.taobao.arthas.core.shell.term.Term;
 /**
  * @author beiwei30 on 23/11/2016.
  */
+//终端server handler
 public class TermServerTermHandler implements Handler<Term> {
     private ShellServerImpl shellServer;
 

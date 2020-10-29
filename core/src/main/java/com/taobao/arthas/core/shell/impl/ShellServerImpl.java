@@ -38,14 +38,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
+//shell server 实现
 public class ShellServerImpl extends ShellServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ShellServerImpl.class);
 
     private final CopyOnWriteArrayList<CommandResolver> resolvers;
     private final InternalCommandManager commandManager;
+    //终端server
     private final List<TermServer> termServers;
     private final long timeoutMillis;
+    //收割间隔,剔除
     private final long reaperInterval;
     private String welcomeMessage;
     private ArthasBootstrap bootstrap;
@@ -55,6 +58,7 @@ public class ShellServerImpl extends ShellServer {
     private final Map<String, ShellImpl> sessions;
     private final Future<Void> sessionsClosed = Future.future();
     private ScheduledExecutorService scheduledExecutorService;
+    //全局jobController
     private JobControllerImpl jobController = new GlobalJobControllerImpl();
 
     public ShellServerImpl(ShellServerOptions options) {
@@ -97,12 +101,13 @@ public class ShellServerImpl extends ShellServer {
                 return;
             }
         }
-
+        //创建shell
         ShellImpl session = createShell(term);
         session.setWelcome(welcomeMessage);
         session.closedFuture.setHandler(new SessionClosedHandler(this, session));
         session.init();
         sessions.put(session.id, session); // Put after init so the close handler on the connection is set
+        //读取命令,处理
         session.readline(); // Now readline
     }
 
@@ -123,6 +128,7 @@ public class ShellServerImpl extends ShellServer {
         }
         Handler<Future<TermServer>> handler = new TermServerListenHandler(this, listenHandler, toStart);
         for (TermServer termServer : toStart) {
+            //TermServerTermHandler
             termServer.termHandler(new TermServerTermHandler(this));
             termServer.listen(handler);
         }
@@ -131,7 +137,7 @@ public class ShellServerImpl extends ShellServer {
 
     private void evictSessions() {
         long now = System.currentTimeMillis();
-        Set<ShellImpl> toClose = new HashSet<ShellImpl>();
+        Set<ShellImpl> toClose = new HashSet();
         for (ShellImpl session : sessions.values()) {
             // do not close if there is still job running,
             // e.g. trace command might wait for a long time before condition is met

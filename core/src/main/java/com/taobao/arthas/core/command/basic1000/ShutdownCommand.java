@@ -24,6 +24,7 @@ import java.lang.instrument.UnmodifiableClassException;
 @Name("shutdown")
 @Summary("Shutdown Arthas server and exit the console")
 @Hidden
+// 退出之前会重置所有的增强类
 public class ShutdownCommand extends AnnotatedCommand {
     @Override
     public void process(CommandProcess process) {
@@ -32,8 +33,8 @@ public class ShutdownCommand extends AnnotatedCommand {
 
     public static void shutdown(CommandProcess process) {
         try {
-            // 退出之前需要重置所有的增强类
             Instrumentation inst = process.session().getInstrumentation();
+            //reset * all
             EnhancerAffect enhancerAffect = Enhancer.reset(inst, new WildcardMatcher("*"));
             process.write(enhancerAffect.toString()).write("\n");
             process.write("Arthas Server is going to shut down...\n");

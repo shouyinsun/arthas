@@ -29,6 +29,7 @@ import com.taobao.arthas.common.FileUtils;
  * @author hengyunabc
  *
  */
+//cfr反编译
 public class Decompiler {
 
 	public static String decompile(byte[] bytecode) throws IOException {
@@ -130,7 +131,7 @@ public class Decompiler {
             }
         };
 
-        HashMap<String, String> options = new HashMap<String, String>();
+        HashMap<String, String> options = new HashMap();
         /**
          * @see org.benf.cfr.reader.util.MiscConstants.Version.getVersion() Currently,
          *      the cfr version is wrong. so disable show cfr version.
@@ -139,9 +140,9 @@ public class Decompiler {
         if (methodName != null) {
             options.put("methodname", methodName);
         }
-
+		//使用cfr反编译
         CfrDriver driver = new CfrDriver.Builder().withOptions(options).withOutputSink(mySink).build();
-        List<String> toAnalyse = new ArrayList<String>();
+        List<String> toAnalyse = new ArrayList();
         toAnalyse.add(classFilePath);
         driver.analyse(toAnalyse);
 

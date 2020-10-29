@@ -37,7 +37,7 @@ import static com.taobao.text.ui.Element.label;
 /**
  * @author diecui1202 on 2017/9/27.
  */
-
+//getStatic 获取静态属性 命令
 @Name("getstatic")
 @Summary("Show the static field of a class")
 @Description(Constants.EXAMPLE +
@@ -95,6 +95,7 @@ public class GetStaticCommand extends AnnotatedCommand {
     public void process(CommandProcess process) {
         RowAffect affect = new RowAffect();
         Instrumentation inst = process.session().getInstrumentation();
+        //Instrumentation 的getAllLoadedClasses 获取jvm loaded 的所有class
         Set<Class<?>> matchedClasses = SearchUtils.searchClassOnly(inst, classPattern, isRegEx, hashCode);
 
         try {
@@ -127,9 +128,11 @@ public class GetStaticCommand extends AnnotatedCommand {
                 field.setAccessible(true);
             }
             try {
+                //获取静态属性的值
+                // 静态属性,object为null
                 Object value = field.get(null);
 
-                if (!StringUtils.isEmpty(express)) {
+                if (!StringUtils.isEmpty(express)) {//可以运行表达式
                     value = ExpressFactory.threadLocalExpress(value).get(express);
                 }
 

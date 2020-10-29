@@ -24,12 +24,16 @@ import com.taobao.middleware.cli.annotations.Summary;
         "  monitor org.apache.commons.lang.StringUtils isBlank -c 5\n" +
         "  monitor -E org\\.apache\\.commons\\.lang\\.StringUtils isBlank\n" +
         Constants.WIKI + Constants.WIKI_HOME + "monitor")
+//monitor 监控 命令
+// 增强命令
 public class MonitorCommand extends EnhancerCommand {
 
     private String classPattern;
     private String methodPattern;
+    //监控间隔,默认60s
     private int cycle = 60;
     private boolean isRegEx = false;
+    //默认执行100次
     private int numberOfLimit = 100;
 
     @Argument(argName = "class-pattern", index = 0)
@@ -100,6 +104,7 @@ public class MonitorCommand extends EnhancerCommand {
 
     @Override
     protected AdviceListener getAdviceListener(CommandProcess process) {
+        //监控通知监听
         final AdviceListener listener = new MonitorAdviceListener(this, process);
         /*
          * 通过handle回调，在suspend时停止timer，resume时重启timer

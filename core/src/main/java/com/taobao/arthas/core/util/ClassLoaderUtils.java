@@ -23,6 +23,7 @@ public class ClassLoaderUtils {
         return classLoaderSet;
     }
 
+    //根据hashcode 获取classloader
     public static ClassLoader getClassLoader(Instrumentation inst, String hashCode) {
         if (hashCode == null || hashCode.isEmpty()) {
             return null;
@@ -39,14 +40,14 @@ public class ClassLoaderUtils {
         return null;
     }
 
-    public static String classLoaderHash(ClassLoader classLoader) {
-        int hashCode = 0;
+    public static String classLoaderHash(ClassLoader classLoader) {//classLoader 的hashcode
+        int hashCode ;
         if (classLoader == null) {
             hashCode = System.identityHashCode(classLoader);
         } else {
             hashCode = classLoader.hashCode();
         }
-        if (hashCode <= 0) {
+        if (hashCode <= 0) {//保证正数
             hashCode = System.identityHashCode(classLoader);
             if (hashCode < 0) {
                 hashCode = hashCode & Integer.MAX_VALUE;
